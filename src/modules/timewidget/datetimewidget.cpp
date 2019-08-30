@@ -25,7 +25,7 @@ DateTimeWidget::DateTimeWidget(QWidget *parent)
 
     layout->setMargin(0);
     layout->setSpacing(0);
-    layout->setContentsMargins(15, 0, 10, 0);
+    layout->setContentsMargins(15, 0, 15, 0);
 
     layout->addWidget(m_timeLbl, 0, Qt::AlignCenter);
 
