@@ -38,7 +38,7 @@ plugins/*/moc*
 moc_*
 qrc_*
 build/
-.vscode/
+# .vscode/
 *.user
 
 Debug/*
