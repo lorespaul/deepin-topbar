@@ -2,13 +2,15 @@
 #include <QTimer>
 #include <QDateTime>
 #include <QHBoxLayout>
+#include "../../frame/mainframe.h"
 
 namespace Plugin {
 namespace DateTime {
 DateTimeWidget::DateTimeWidget(QWidget *parent)
     : ContentModule(parent)
 {
-    setStyleSheet("QLabel {color: #d3d3d3; font-size: 11pt;}");
+    // setStyleSheet("QLabel {color: #d3d3d3; font-size: 11pt;}");
+    setStyleSheet("QLabel {color: #d3d3d3;}");
 
     m_dateTime = new QDateTime;
     QTimer *timer = new QTimer(this);
@@ -23,13 +25,13 @@ DateTimeWidget::DateTimeWidget(QWidget *parent)
 
     layout->setMargin(0);
     layout->setSpacing(0);
-    layout->setContentsMargins(10, 0, 10, 0);
+    layout->setContentsMargins(15, 0, 10, 0);
 
     layout->addWidget(m_timeLbl, 0, Qt::AlignCenter);
 
     setLayout(layout);
 
-    m_format = "yyyy-MM-dd hh:mm";
+    m_format = "ddd dd MMM yyyy  hh:mm";
 }
 
 DateTimeWidget::~DateTimeWidget() {

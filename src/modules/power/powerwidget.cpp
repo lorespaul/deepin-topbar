@@ -3,6 +3,7 @@
 #include "widgets/fontlabel.h"
 #include "widgets/dwidgetaction.h"
 #include "frame/utils/global.h"
+#include "frame/mainframe.h"
 
 #include <QHBoxLayout>
 #include <QIcon>
@@ -20,7 +21,7 @@ namespace power {
 PowerWidget::PowerWidget(QWidget *parent)
     : ContentModule(parent)
 {
-    setStyleSheet("QLabel {color: #d3d3d3; font-size: 11pt;}");
+    setStyleSheet("QLabel {color: #d3d3d3;}");
     m_powerActionWidget = new PowerWidgetAction;
 
     m_batteryIcon = new QLabel;
@@ -28,10 +29,10 @@ PowerWidget::PowerWidget(QWidget *parent)
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->setMargin(0);
-    layout->setSpacing(3);
-    layout->setContentsMargins(3, 0, 3, 0);
+    layout->setSpacing(0);
+    layout->setContentsMargins(10, 0, 0, 0);
     layout->addWidget(m_batteryIcon, 0, Qt::AlignVCenter);
-    layout->addSpacing(5);
+    layout->addSpacing(6);
     layout->addWidget(m_battery, 0, Qt::AlignVCenter);
 
     setLayout(layout);
@@ -136,24 +137,7 @@ void PowerWidget::initMenu()
 
     lastTime->setCheckable(true);
 
-    m_menu->setStyleSheet(
-        "QMenu{"
-            "background-color: transparent;"
-        "}"
-        "QMenu#SourceAction{"
-            "color: rgb(180, 180, 180);"
-        "}"
-        "QMenu::item{"
-            "color: rgb(255, 255, 255);"
-        "}"
-        "QMenu::item:selected{"
-            "background: rgba(100, 100, 100, 150);"
-        "}"
-        "QMenu::separator{"
-            "height: 0.5px;"
-            "background: rgba(100, 100, 100, 150);"
-        "}"
-    );
+    m_menu->setStyleSheet(QMENU_STYLE);
 
     m_menu->addAction(m_sourceAction);
     m_menu->addSeparator();
@@ -216,7 +200,8 @@ void PowerWidget::refreshTipsData() {
     }
 
     m_battery->setText(
-        QString("%1 %2").arg(charging ? tr("Charging") : tr("Capacity")).arg(value));
+        // QString("%1 %2").arg(charging ? tr("Charging") : tr("Capacity")).arg(value));
+        QString("%1").arg(value));
 
     if (!m_powerInter->batteryIsPresent().isEmpty()) {
         if (batteryState == BatteryState::FULLY_CHARGED || percentage == 100.) {

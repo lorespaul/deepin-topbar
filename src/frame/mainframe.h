@@ -1,6 +1,8 @@
 #ifndef MAINFRAME_H
 #define MAINFRAME_H
 
+#define QMENU_STYLE "QMenu{background-color: transparent;}QMenu::item{color: #d3d3d3;}QMenu::item:selected{background: rgba(16, 109, 170, 150);}QMenu::separator{height: 1px;background: rgba(200, 200, 200, 150);}"
+
 #include <QFrame>
 #include <QDesktopWidget>
 #include <QHBoxLayout>

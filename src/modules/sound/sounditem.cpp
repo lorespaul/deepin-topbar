@@ -6,6 +6,7 @@
 #include "sinkinputwidget.h"
 #include "componments/mediacontrol.h"
 #include "frame/utils/global.h"
+#include "frame/mainframe.h"
 
 #include <QPainter>
 #include <QIcon>
@@ -79,21 +80,7 @@ SoundItem::SoundItem(QWidget *parent)
     m_separator = new QAction(this);
     m_separator->setSeparator(true);
 
-    m_menu->setStyleSheet(
-        "QMenu{"
-            "background-color: transparent;"
-        "}"
-        "QMenu::item{"
-            "color: rgb(255, 255, 255);"
-        "}"
-        "QMenu::item:selected{"
-            "background: rgba(100, 100, 100, 150);"
-        "}"
-        "QMenu::separator{"
-            "height: 0.5px;"
-            "background: rgba(100, 100, 100, 150);"
-        "}"
-    );
+    m_menu->setStyleSheet(QMENU_STYLE);
 
     m_menu->addAction(m_appletAction);
 

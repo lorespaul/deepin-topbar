@@ -44,7 +44,7 @@ IndicatorWidget::~IndicatorWidget()
 void IndicatorWidget::initUI()
 {
     setObjectName("Indiactor");
-    setStyleSheet("QLabel {color: #d3d3d3; font-size: 11pt;}");
+    setStyleSheet("QLabel {color: #d3d3d3;}");
 
     setWindowFlags(Qt::WindowDoesNotAcceptFocus);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -116,7 +116,7 @@ void IndicatorWidget::refreshActiveWindow()
         }
     }
 
-    m_entry->setText(m_systemVersion);
+    m_entry->setText(tr("Desktop"));
 }
 
 }

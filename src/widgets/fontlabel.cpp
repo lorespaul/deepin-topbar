@@ -26,7 +26,8 @@ void FontLabel::setIcon(const QChar c, int size)
 
 void FontLabel::setIcon(const QPixmap pixmap)
 {
-    setPixmap(pixmap);       
+    setPixmap(pixmap);
+    setContentsMargins(5, 0, 0, 0);
 }
 
 void FontLabel::mouseReleaseEvent(QMouseEvent *event)

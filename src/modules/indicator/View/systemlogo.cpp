@@ -21,6 +21,8 @@
 #include "widgets/dactionlabel.h"
 #include "frame/utils/global.h"
 
+#include "frame/mainframe.h"
+
 #include <QIcon>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -93,21 +95,7 @@ SystemLogo::SystemLogo(QWidget *parent)
 #endif
     // DActionLabel *pre = new DActionLabel(m_preference);
     
-    m_menu->setStyleSheet(
-        "QMenu{"
-            "background-color: transparent;"
-        "}"
-        "QMenu::item{"
-            "color: rgb(255, 255, 255);"
-        "}"
-        "QMenu::item:selected{"
-            "background: rgba(100, 100, 100, 150);"
-        "}"
-        "QMenu::separator{"
-            "height: 0.5px;"
-            "background: rgba(100, 100, 100, 150);"
-        "}"
-    );
+    m_menu->setStyleSheet(QMENU_STYLE);
     
     m_menu->addAction(about);
     m_menu->addSeparator();

@@ -95,6 +95,10 @@ void MainFrame::init()
     int alpha = m_appearanceInter->opacity() * 255;
     m_defaultBgColor.setAlpha(alpha);//maskAlpha());
 
+    QFont font = m_appearanceInter->standardFont();
+    font.setPixelSize(14);
+    QApplication::setFont(font);
+
     m_mainPanel = new dtb::MainPanel(this);
 
 //    m_showWithLauncher =new QPropertyAnimation(m_mainPanel, "pos", m_mainPanel);

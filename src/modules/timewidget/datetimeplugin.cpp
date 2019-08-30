@@ -6,6 +6,8 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
+#include "../../frame/mainframe.h"
+
 using namespace dtb;
 using namespace dtb::datetime;
 using namespace dtb::widgets;
@@ -29,27 +31,11 @@ void DateTimePlugin::init(PluginProxyInterface *proxyInter) {
     m_proxyInter->addItem(this, pluginName());
 
     m_menu = new QMenu(m_centralWidget);
-    m_menu->setStyleSheet(
-        "QMenu{"
-            "background-color: transparent;"
-        "}"
-        "QMenu#SourceAction{"
-            "color: rgb(180, 180, 180);"
-        "}"
-        "QMenu::item{"
-            "color: rgb(255, 255, 255);"
-        "}"
-        "QMenu::item:selected{"
-            "background: rgba(100, 100, 100, 150);"
-        "}"
-        "QMenu::separator{"
-            "height: 0.5px;"
-            "background: rgba(100, 100, 100, 150);"
-        "}"
-    );
+    m_menu->setStyleSheet(QMENU_STYLE);
 
     m_switchItem = new SwitchItem;
     DWidgetAction *switchFormat = new DWidgetAction(m_switchItem);
+    m_switchItem->setContentsMargins(7, 0, 0, 0);
     m_switchItem->setText(tr("24 Hour Time"));
 
     m_menu->addAction(switchFormat);
