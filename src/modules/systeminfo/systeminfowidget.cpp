@@ -29,12 +29,12 @@ SystemInfoWidget::SystemInfoWidget(QWidget *parent)
     m_cpu = new QLabel();
     m_cpu->setFixedHeight(20);
     m_cpu->setText("00%");
-    m_cpu->setStyleSheet("QLabel {font-size: 16px;}");
+    m_cpu->setStyleSheet("QLabel {font-size: 14px;}");
 
     m_mem = new QLabel();
     m_mem->setFixedHeight(20);
     m_mem->setText("00%");
-    m_mem->setStyleSheet("QLabel {font-size: 16px;}");
+    m_mem->setStyleSheet("QLabel {font-size: 14px;}");
 
 
 
@@ -44,8 +44,8 @@ SystemInfoWidget::SystemInfoWidget(QWidget *parent)
     QHBoxLayout *uploadlayout = new QHBoxLayout;
     uploadlayout->setMargin(0);
     uploadlayout->setSpacing(0);
-    uploadlayout->addWidget(up, 0, Qt::AlignVCenter | Qt::AlignLeft);
     uploadlayout->addWidget(m_tx, 0, Qt::AlignVCenter | Qt::AlignRight);
+    uploadlayout->addWidget(up, 0, Qt::AlignVCenter | Qt::AlignLeft);
 
     QLabel *down = new QLabel;
     down->setPixmap(DHiDPIHelper::loadNxPixmap(":/left_down.svg").scaled(QSize(10, 10) * devicePixelRatioF(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
@@ -53,14 +53,15 @@ SystemInfoWidget::SystemInfoWidget(QWidget *parent)
     QHBoxLayout *downlayout = new QHBoxLayout;
     downlayout->setMargin(0);
     downlayout->setSpacing(0);
-    downlayout->addWidget(down, 0, Qt::AlignVCenter | Qt::AlignLeft);
     downlayout->addWidget(m_rx, 0, Qt::AlignVCenter | Qt::AlignRight);
+    downlayout->addWidget(down, 0, Qt::AlignVCenter | Qt::AlignLeft);
 
     QVBoxLayout *networklayout = new QVBoxLayout;
     networklayout->setMargin(0);
     networklayout->setSpacing(0);
     networklayout->addLayout(uploadlayout);
     networklayout->addLayout(downlayout);
+    networklayout->setContentsMargins(5, 0, 0, 0);
 
     QLabel *cpuIcon = new QLabel();
     cpuIcon->setPixmap(DHiDPIHelper::loadNxPixmap(":/icon_cpu_dark.svg").scaled(QSize(24, 24) * devicePixelRatioF(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
@@ -77,7 +78,7 @@ SystemInfoWidget::SystemInfoWidget(QWidget *parent)
     QHBoxLayout *mainLayout = new QHBoxLayout();
     mainLayout->setMargin(0);
     mainLayout->setSpacing(0);
-//    mainLayout->setContentsMargins(3, 2, 3, 2);
+   mainLayout->setContentsMargins(5, 0, 0, 0);
     mainLayout->addLayout(memLayout);
     mainLayout->addLayout(cpuLayout);
     mainLayout->addLayout(networklayout);

@@ -57,7 +57,7 @@ SoundItem::SoundItem(QWidget *parent)
     QHBoxLayout *layout = new QHBoxLayout;
     layout->setMargin(0);
     layout->setSpacing(3);
-    layout->setContentsMargins(3, 0, 3, 0);
+    layout->setContentsMargins(5, 0, 0, 0);
     layout->addWidget(m_tickScrollArea, 0, Qt::AlignCenter);
     layout->addWidget(m_mediaControl, 0, Qt::AlignCenter);
     layout->addWidget(m_fontLabel, 0, Qt::AlignCenter);
