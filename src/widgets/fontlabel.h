@@ -11,6 +11,7 @@ class FontLabel : public QLabel
 public:
     explicit FontLabel(QWidget *parent = 0);
     void setIcon(const QChar c, int size);
+    void setIcon(const QPixmap pixmap);
 
 signals:
     void clicked();

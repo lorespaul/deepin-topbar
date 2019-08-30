@@ -27,7 +27,27 @@ void DateTimePlugin::init(PluginProxyInterface *proxyInter) {
     m_proxyInter = proxyInter;
 
     m_proxyInter->addItem(this, pluginName());
+
     m_menu = new QMenu(m_centralWidget);
+    m_menu->setStyleSheet(
+        "QMenu{"
+            "background-color: transparent;"
+        "}"
+        "QMenu#SourceAction{"
+            "color: rgb(180, 180, 180);"
+        "}"
+        "QMenu::item{"
+            "color: rgb(255, 255, 255);"
+        "}"
+        "QMenu::item:selected{"
+            "background: rgba(100, 100, 100, 150);"
+        "}"
+        "QMenu::separator{"
+            "height: 0.5px;"
+            "background: rgba(100, 100, 100, 150);"
+        "}"
+    );
+
     m_switchItem = new SwitchItem;
     DWidgetAction *switchFormat = new DWidgetAction(m_switchItem);
     m_switchItem->setText(tr("24 Hour Time"));

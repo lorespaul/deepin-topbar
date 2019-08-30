@@ -11,11 +11,13 @@
 #include <QPropertyAnimation>
 #include <DForeignWindow>
 #include <com_deepin_dde_daemon_dock.h>
+#include <com_deepin_daemon_appearance.h>
 #include <memory>
 
 #include "mainpanel.h"
 
 using DockInter = com::deepin::dde::daemon::Dock;
+using Appearance = com::deepin::daemon::Appearance;
 
 DWIDGET_USE_NAMESPACE
 
@@ -36,6 +38,7 @@ private slots:
 #endif
     void onWindowStateChanged(Qt::WindowState windowState);
     void delayedScreenChanged();
+    void opacityChanged(double opacity);
 
 private:
     void init();
@@ -60,6 +63,7 @@ private:
 //    QPropertyAnimation *m_hideWithLauncher;
 //    QPropertyAnimation *m_showWithLauncher;
     DockInter *m_dockInter;
+    Appearance *m_appearanceInter;
     QWidget *m_structWidget;
 
     QMap<WId,DForeignWindow*> m_windowList;

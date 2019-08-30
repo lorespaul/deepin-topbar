@@ -59,24 +59,30 @@ SystemLogo::SystemLogo(QWidget *parent)
     setLayout(layout);
 
     QAction *about = new QAction(tr("About"), this);
+    QAction *pre = new QAction(tr("Preference setting"));
+    pre->installEventFilter(this);
+    // m_preference = new QWidget;
+    // m_preference->setObjectName("Preference");
+    // // m_preference->setStyleSheet("background: rgba(100, 100, 100, 150);");
+    // m_preference->setStyleSheet(
+    //     "QLabel {color: white;}"
+    //     "QLabel:hover {background: rgba(100, 100, 100, 150);}"
+    // );
+    // m_preference->installEventFilter(this);
+    // // m_preference->setBackgroundRole(QPalette::NoRole);
 
-    m_preference = new QWidget;
-    m_preference->setObjectName("Preference");
+    // QHBoxLayout *preLayout = new QHBoxLayout(m_preference);
+    // preLayout->setMargin(0);
+    // preLayout->setSpacing(0);
 
-    m_preference->installEventFilter(this);
-
-    QHBoxLayout *preLayout = new QHBoxLayout(m_preference);
-    preLayout->setMargin(0);
-    preLayout->setSpacing(0);
-
-    preLayout->addSpacing(27);
-    preLayout->addWidget(new QLabel(tr("Preference setting")));
+    // preLayout->addSpacing(20);
+    // preLayout->addWidget(new QLabel(tr("Preference setting")));
 
 #ifdef ENABLE_APPSTORE
     m_appstore = new AppstoreAction;
 #endif
 
-    QAction *forceQuit = new QAction(tr("Force quit"), this);
+    // QAction *forceQuit = new QAction(tr("Force quit"), this);
     QAction *sleep = new QAction(tr("Sleep"), this);
     QAction *restart = new QAction(tr("Restart"), this);
     QAction *shutdown = new QAction(tr("Power off"), this);
@@ -85,8 +91,24 @@ SystemLogo::SystemLogo(QWidget *parent)
 #ifdef ENABLE_APPSTORE
     DActionLabel *app = new DActionLabel(m_appstore);
 #endif
-    DActionLabel *pre = new DActionLabel(m_preference);
-
+    // DActionLabel *pre = new DActionLabel(m_preference);
+    
+    m_menu->setStyleSheet(
+        "QMenu{"
+            "background-color: transparent;"
+        "}"
+        "QMenu::item{"
+            "color: rgb(255, 255, 255);"
+        "}"
+        "QMenu::item:selected{"
+            "background: rgba(100, 100, 100, 150);"
+        "}"
+        "QMenu::separator{"
+            "height: 0.5px;"
+            "background: rgba(100, 100, 100, 150);"
+        "}"
+    );
+    
     m_menu->addAction(about);
     m_menu->addSeparator();
     m_menu->addAction(pre);
@@ -96,8 +118,8 @@ SystemLogo::SystemLogo(QWidget *parent)
 #endif
 
     m_menu->addSeparator();
-    m_menu->addAction(forceQuit);
-    m_menu->addSeparator();
+    // m_menu->addAction(forceQuit);
+    // m_menu->addSeparator();
     m_menu->addAction(sleep);
     m_menu->addAction(restart);
     m_menu->addAction(shutdown);
@@ -111,7 +133,7 @@ SystemLogo::SystemLogo(QWidget *parent)
 #ifdef ENABLE_APPSTORE
     connect(app, &QAction::triggered, signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
 #endif
-    connect(forceQuit, &QAction::triggered, signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
+    // connect(forceQuit, &QAction::triggered, signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
     connect(sleep, &QAction::triggered, signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
     connect(restart, &QAction::triggered, signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
     connect(shutdown, &QAction::triggered, signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
@@ -124,7 +146,7 @@ SystemLogo::SystemLogo(QWidget *parent)
     signalMapper->setMapping(app, Appstore);
 #endif
 
-    signalMapper->setMapping(forceQuit, ForceQuit);
+    // signalMapper->setMapping(forceQuit, ForceQuit);
     signalMapper->setMapping(sleep, "Suspend");
     signalMapper->setMapping(restart, "Restart");
     signalMapper->setMapping(shutdown, "Shutdown");
@@ -133,7 +155,7 @@ SystemLogo::SystemLogo(QWidget *parent)
     connect(signalMapper, static_cast<void (QSignalMapper::*)(const int)>(&QSignalMapper::mapped), this, &SystemLogo::handleAction);
     connect(signalMapper, static_cast<void (QSignalMapper::*)(const QString &)>(&QSignalMapper::mapped), this, &SystemLogo::handleShutdownAction);
 
-    setStyleSheet("QWidget#Preference QLabel {color: black;}");
+    // setStyleSheet("QWidget#Preference QLabel {color: white;}");
 }
 
 QMenu *SystemLogo::menu() const
@@ -162,9 +184,9 @@ void SystemLogo::handleAction(const int &action)
     case Appstore:
         QProcess::startDetached("/usr/bin/deepin-appstore");
         break;
-    case ForceQuit:
-        emit requestForceQuit();
-        break;
+    // case ForceQuit:
+    //     emit requestForceQuit();
+    //     break;
     default:
         break;
     }
@@ -183,15 +205,15 @@ void SystemLogo::handleShutdownAction(const QString &action)
 
 bool SystemLogo::eventFilter(QObject *watched, QEvent *event)
 {
-    if (watched == m_preference) {
-        if (event->type() == QEvent::Enter) {
-            setStyleSheet("QWidget#Preference QLabel { color: white;}");
-        }
+    // if (watched == m_preference) {
+    //     if (event->type() == QEvent::Enter) {
+    //         setStyleSheet("QWidget#Preference QLabel { color: white;}");
+    //     }
 
-        if (event->type() == QEvent::Leave) {
-            setStyleSheet("QWidget#Preference QLabel { color: black;}");
-        }
-    }
+    //     if (event->type() == QEvent::Leave) {
+    //         setStyleSheet("QWidget#Preference QLabel { color: black;}");
+    //     }
+    // }
 
     return ContentModule::eventFilter(watched, event);
 }

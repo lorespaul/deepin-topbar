@@ -91,7 +91,9 @@ void MainFrame::init()
     DPlatformWindowHandle handle(this);
     handle.setShadowColor(QColor(0, 0, 0, 0));
 
-    m_defaultBgColor.setAlpha(maskAlpha());
+    m_appearanceInter = new Appearance("com.deepin.daemon.Appearance", "/com/deepin/daemon/Appearance", QDBusConnection::sessionBus(), this);
+    int alpha = m_appearanceInter->opacity() * 255;
+    m_defaultBgColor.setAlpha(alpha);//maskAlpha());
 
     m_mainPanel = new dtb::MainPanel(this);
 
@@ -124,11 +126,23 @@ void MainFrame::initConnect()
     connect(m_dockInter, &DockInter::PositionChanged, this, &MainFrame::delayedScreenChanged, Qt::QueuedConnection);
     connect(m_dockInter, &DockInter::IconSizeChanged, this, &MainFrame::delayedScreenChanged, Qt::QueuedConnection);
     connect(m_dockInter, &DockInter::FrontendWindowRectChanged, this, &MainFrame::delayedScreenChanged, Qt::QueuedConnection);
+    
+    connect(m_appearanceInter, &Appearance::OpacityChanged, this, &MainFrame::opacityChanged, Qt::QueuedConnection);
 
     connect(m_backgroundAni, &QVariantAnimation::valueChanged, this, [=] (const QVariant &value){
         onBackgroundChanged(value.value<QColor>());
     }, Qt::ConnectionType::QueuedConnection);
 }
+
+
+void MainFrame::opacityChanged(double opacity)
+{
+    int alpha = opacity * 255;
+    m_defaultBgColor.setAlpha(alpha);
+    
+    updateBackground();
+}
+
 
 void MainFrame::initAnimation()
 {
@@ -435,7 +449,7 @@ QPainterPath MainFrame::pathHandle() const {
 
     QPainterPath path;
     QRect rect(m_mainPanel->geometry().bottomLeft() + QPoint(0, 1), QSize(width(), FRAMEHEIGHT * 2));
-    path.addRoundedRect(rect, 10, 10);
+    path.addRoundedRect(rect, 0, 0);
 
     return (basepath - path);
 }

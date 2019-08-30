@@ -64,7 +64,7 @@ private:
 #ifdef ENABLE_APPSTORE
     AppstoreAction *m_appstore;
 #endif
-    QWidget *m_preference;
+    // QWidget *m_preference;
 };
 }
 }

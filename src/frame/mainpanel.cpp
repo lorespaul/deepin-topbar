@@ -156,7 +156,7 @@ void MainPanel::loadModules()
 
     loadModule(new datetime::DateTimePlugin);
 
-    loadModule(new notify::NotifyPlugin);
+    // loadModule(new notify::NotifyPlugin);
 }
 
 void MainPanel::loadModule(PluginsItemInterface * const module)

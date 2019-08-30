@@ -124,6 +124,7 @@ void PowerWidget::initMenu()
     m_menu = new QMenu(this);
 
     m_sourceAction = new QAction(this);
+    m_sourceAction->setObjectName("SourceAction");
     QAction* percentage = new QAction(tr("Show percentage"), this);
     QAction* lastTime = new QAction(tr("Show LastTime"), this);
     QAction* preference = new QAction(tr("Open Energy saver preferences"), this);
@@ -134,6 +135,25 @@ void PowerWidget::initMenu()
     percentage->setChecked(true);
 
     lastTime->setCheckable(true);
+
+    m_menu->setStyleSheet(
+        "QMenu{"
+            "background-color: transparent;"
+        "}"
+        "QMenu#SourceAction{"
+            "color: rgb(180, 180, 180);"
+        "}"
+        "QMenu::item{"
+            "color: rgb(255, 255, 255);"
+        "}"
+        "QMenu::item:selected{"
+            "background: rgba(100, 100, 100, 150);"
+        "}"
+        "QMenu::separator{"
+            "height: 0.5px;"
+            "background: rgba(100, 100, 100, 150);"
+        "}"
+    );
 
     m_menu->addAction(m_sourceAction);
     m_menu->addSeparator();

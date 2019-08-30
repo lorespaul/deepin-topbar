@@ -40,7 +40,7 @@ private:
     IndicatorModel *m_model;
     IndicatorWorker *m_worker;
     DThemeManager *m_themeManager;
-    PositionWidget *m_positionLbl;
+    // PositionWidget *m_positionLbl;
 };
 }
 }

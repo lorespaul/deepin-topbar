@@ -40,3 +40,5 @@ qrc_*
 build/
 .vscode/
 *.user
+
+Debug/*

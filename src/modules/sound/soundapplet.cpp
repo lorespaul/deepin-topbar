@@ -9,6 +9,7 @@
 #include <QMouseEvent>
 #include <QLabel>
 #include <QIcon>
+#include <DHiDPIHelper>
 
 #define WIDTH       200
 #define MAX_HEIGHT  200
@@ -39,7 +40,7 @@ SoundApplet::SoundApplet(QWidget *parent)
 
     QLabel *deviceLabel = new QLabel;
     deviceLabel->setText(tr("Device"));
-    deviceLabel->setStyleSheet("color: rgb(67, 67, 62);"
+    deviceLabel->setStyleSheet("color: rgb(180, 180, 180);"
                                "background: transparent;");
 
     QHBoxLayout *deviceLineLayout = new QHBoxLayout;
@@ -138,18 +139,23 @@ void SoundApplet::onVolumeChanged()
     emit volumeChanged(m_volumeSlider->value());
 
     if (mute) {
-        m_volumeBtn->setIcon(QChar(0xE198), 14);
+        // m_volumeBtn->setIcon(QChar(0xE198), 14);
+        m_volumeBtn->setIcon(DHiDPIHelper::loadNxPixmap(":/image/image/mute.svg"));
         return;
     }
 
     if (volume >= 1)
-        m_volumeBtn->setIcon(QChar(0xE995), 14);
+        // m_volumeBtn->setIcon(QChar(0xE995), 14);
+        m_volumeBtn->setIcon(DHiDPIHelper::loadNxPixmap(":/image/image/full.svg"));
     else if (volume >= 0.4f)
-        m_volumeBtn->setIcon(QChar(0xE994), 14);
+        // m_volumeBtn->setIcon(QChar(0xE994), 14);
+        m_volumeBtn->setIcon(DHiDPIHelper::loadNxPixmap(":/image/image/half.svg"));
     else if (volume >= 0.2f)
-        m_volumeBtn->setIcon(QChar(0xE993), 14);
+        // m_volumeBtn->setIcon(QChar(0xE993), 14);
+        m_volumeBtn->setIcon(DHiDPIHelper::loadNxPixmap(":/image/image/low.svg"));
     else
-        m_volumeBtn->setIcon(QChar(0xE992), 14);
+        // m_volumeBtn->setIcon(QChar(0xE992), 14);
+        m_volumeBtn->setIcon(DHiDPIHelper::loadNxPixmap(":/image/image/empty.svg"));
 }
 
 void SoundApplet::volumeSliderValueChanged()
