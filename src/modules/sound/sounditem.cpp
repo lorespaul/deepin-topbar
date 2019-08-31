@@ -37,7 +37,7 @@ SoundItem::SoundItem(QWidget *parent)
     , m_sinkInter(nullptr)
     , m_menu(new QMenu(this))
 {
-    setStyleSheet("QLabel {color: white;}");
+    setStyleSheet("QLabel {background-color: transparent; color: white;}");
 
     m_tickScrollArea->setWidget(m_mprisTitle);
     m_tickScrollArea->setObjectName("scrollarea");
@@ -99,7 +99,7 @@ SoundItem::SoundItem(QWidget *parent)
     connect(m_applet, &SoundApplet::addNew, this, &SoundItem::addNewInput);
     connect(m_applet, &SoundApplet::removeAll, this, &SoundItem::clearAllInput);
 
-    initMpris();
+    // initMpris();
 }
 
 QMenu* SoundItem::menu() const

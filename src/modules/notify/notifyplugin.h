@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QLabel>
+#include <QPushButton>
 
 class NotifyWidget;
 
@@ -21,14 +22,17 @@ public:
     void init(PluginProxyInterface *proxyInter) Q_DECL_OVERRIDE;
 
     QWidget *itemWidget(const QString &itemKey) Q_DECL_OVERRIDE;
-    QWidget* itemContextMenu(const QString &itemKey) Q_DECL_OVERRIDE;
+    // QWidget* itemContextMenu(const QString &itemKey) Q_DECL_OVERRIDE;
 
     void setDefaultColor(PluginProxyInterface::DefaultColor color) Q_DECL_OVERRIDE;
 
+public slots:
+    void openNoifications();
+
 private:
     PluginProxyInterface *m_proxyInter;
-    NotifyWidget *m_notify;
-    QLabel *m_notifyBtn;
+    // NotifyWidget *m_notify;
+    QPushButton *m_notifyBtn;
 };
 }
 }
