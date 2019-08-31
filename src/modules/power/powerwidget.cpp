@@ -104,6 +104,7 @@ void PowerWidget::updateBatteryIcon() {
 void PowerWidget::onActionHandle(const QString &action)
 {
     if (action == "percentage") {
+        m_battery->isHidden() ? m_battery->show() : m_battery->hide();
         return;
     }
 
@@ -127,7 +128,7 @@ void PowerWidget::initMenu()
     m_sourceAction = new QAction(this);
     m_sourceAction->setObjectName("SourceAction");
     QAction* percentage = new QAction(tr("Show percentage"), this);
-    QAction* lastTime = new QAction(tr("Show LastTime"), this);
+    // QAction* lastTime = new QAction(tr("Show LastTime"), this);
     QAction* preference = new QAction(tr("Open Energy saver preferences"), this);
 
     m_sourceAction->setEnabled(false);
@@ -135,23 +136,24 @@ void PowerWidget::initMenu()
     percentage->setCheckable(true);
     percentage->setChecked(true);
 
-    lastTime->setCheckable(true);
+    // lastTime->setCheckable(true);
 
     m_menu->setStyleSheet(QMENU_STYLE);
 
     m_menu->addAction(m_sourceAction);
     m_menu->addSeparator();
     m_menu->addAction(percentage);
-    m_menu->addAction(lastTime);
+    // m_menu->addAction(lastTime);
     m_menu->addAction(preference);
 
     QSignalMapper *signalMapper = new QSignalMapper(this);
 
     connect(percentage, &QAction::triggered, signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
+    // connect(lastTime, &QAction::triggered, signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
     connect(preference, &QAction::triggered, signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
 
     signalMapper->setMapping(percentage, "percentage");
-    signalMapper->setMapping(lastTime, "lastTime");
+    // signalMapper->setMapping(lastTime, "lastTime");
     signalMapper->setMapping(preference, "preference");
 
     connect(signalMapper, static_cast<void (QSignalMapper::*)(const QString &)>(&QSignalMapper::mapped), this, &PowerWidget::onActionHandle);
@@ -204,16 +206,18 @@ void PowerWidget::refreshTipsData() {
         QString("%1").arg(value));
 
     if (!m_powerInter->batteryIsPresent().isEmpty()) {
+        const bool plugged = !m_powerInter->onBattery();
+
         if (batteryState == BatteryState::FULLY_CHARGED || percentage == 100.) {
             m_sourceAction->setText(QString("%1: %2 (%3)")
                                         .arg(tr("Power source"))
-                                        .arg(tr("Battery"))
+                                        .arg(plugged ? tr("Current") : tr("Battery"))
                                         .arg(tr("Charged")));
         }
         else {
             m_sourceAction->setText(QString("%1: %2 (%3)")
                                         .arg(tr("Power source"))
-                                        .arg(tr("Battery"))
+                                        .arg(plugged ? tr("Current") : tr("Battery"))
                                         .arg(tips));
         }
     }
