@@ -35,10 +35,11 @@ SearchButton::SearchButton(QFrame *parent)
 
     layout->setMargin(0);
     layout->setSpacing(0);
-    layout->setContentsMargins(10, 0, 10, 0);
+    layout->setContentsMargins(5, 0, 0, 0);
 
     FontLabel *label = new FontLabel;
-    label->setIcon(QChar(0xE721), FONTSIZE);
+    label->setStyleSheet("QLabel{color: white;}");
+    label->setIcon(QChar(0xE721), 11);
 
     layout->addWidget(label);
 
@@ -55,7 +56,7 @@ void SearchButton::mousePressEvent(QMouseEvent *event)
 {
     ContentModule::mousePressEvent(event);
 
-    setStyleSheet("background: #1E90FF;");
+    // setStyleSheet("background: #1E90FF;");
 }
 
 void SearchButton::mouseReleaseEvent(QMouseEvent *event)
@@ -65,7 +66,6 @@ void SearchButton::mouseReleaseEvent(QMouseEvent *event)
     setStyleSheet("background: transparent;");
 
     QProcess::startDetached("albert");
-
     QProcess::startDetached("albert", QStringList() << "show");
 }
 

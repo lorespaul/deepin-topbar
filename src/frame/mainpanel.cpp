@@ -150,11 +150,11 @@ void MainPanel::loadModules()
 //     loadModule(new network::NetworkPlugin);
 // #endif
 
-    loadModule(new search::SearchModule);
-
     loadModule(new power::PowerPlugin);
 
     loadModule(new datetime::DateTimePlugin);
+
+    loadModule(new search::SearchModule);
 
     loadModule(new notify::NotifyPlugin);
 }

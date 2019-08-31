@@ -30,6 +30,7 @@ const QString NotifyPlugin::pluginName() const
 
 void NotifyPlugin::openNoifications() 
 {
+    QProcess::startDetached("dbus-send --print-reply --dest=com.deepin.dde.ControlCenter /com/deepin/dde/ControlCenter com.deepin.dde.ControlCenter.ShowHome");
     QProcess::startDetached("dbus-send --print-reply --dest=com.deepin.dde.ControlCenter /com/deepin/dde/ControlCenter com.deepin.dde.ControlCenter.ShowNotifications");
 }
 
