@@ -51,10 +51,14 @@ void MainPanel::initUI()
 void MainPanel::initConnect()
 {
     connect(m_settings, &Settings::valueChanged, this, [=] (const QString &key, const QVariant &value) {
+        m_settings->settings()->sync();
+        
         if (key == "base.base_setting.enable_dock") {
             QSettings setting("deepin", "dde-dock");
             setting.beginGroup("tray");
             setting.setValue("enable", value.toBool());
+        } else {
+            QTimer::singleShot(1, this, &MainPanel::reload);
         }
     });
 }
@@ -211,15 +215,13 @@ void MainPanel::hidePopupWindow()
 
 void MainPanel::showSettingDialog()
 {
+    
     DSettingsDialog *dialog = new DSettingsDialog;
-
     dialog->updateSettings(m_settings->settings());
 
+    dialog->show(); // fix settings dialog freeze
     dialog->exec();
 
     dialog->deleteLater();
-
-    m_settings->settings()->sync();
-
-    QTimer::singleShot(1, this, &MainPanel::reload);
+    
 }

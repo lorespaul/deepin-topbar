@@ -75,5 +75,6 @@ void SearchButton::onDirectoryChanged()
 
     const bool isAlbertValid = process->execute("which", QStringList() << "albert") == 0;
 
-    setVisible(isAlbertValid);
+    // setVisible(isAlbertValid);
+    setEnabled(isAlbertValid); // setVisible break interface
 }
