@@ -19,6 +19,7 @@ public:
     void initUI();
     void initConnect();
 
+    PluginsItem* getItem(PluginsItemInterface * const module, const QString &itemKey);
     void addItem(PluginsItemInterface * const module, const QString &itemKey) Q_DECL_OVERRIDE;
     void removeItem(PluginsItemInterface * const module, const QString &itemKey) Q_DECL_OVERRIDE;
 

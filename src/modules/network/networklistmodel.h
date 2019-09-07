@@ -3,6 +3,8 @@
 
 #include "item/applet/accesspoint.h"
 
+#include "networkcontrolpanel.h"
+
 #include <QObject>
 #include <QAbstractListModel>
 #include <NetworkDevice>
@@ -15,7 +17,7 @@ class NetworkListModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    explicit NetworkListModel(QObject *parent = nullptr);
+    explicit NetworkListModel(NetworkControlPanel *m_controlPanel, QObject *parent = nullptr);
     void setDeviceList(const QMap<QString, dde::network::NetworkDevice *> list);
 
     enum ListRole {
@@ -27,6 +29,7 @@ public:
     };
 
     void setHoverIndex(const QModelIndex &index);
+    int rowCount();
 
 protected:
     int rowCount(const QModelIndex &parent) const Q_DECL_OVERRIDE;
@@ -46,6 +49,7 @@ private:
     QMap<QString, dde::network::WirelessDevice*> m_wirelessList;
     QMap<dde::network::WirelessDevice*, QList<AccessPoint>> m_apMap;
     dde::network::WirelessDevice *m_currentWirelessDevice;
+    NetworkControlPanel *m_controlPanel;
     QModelIndex m_hoverIndex;
 };
 }

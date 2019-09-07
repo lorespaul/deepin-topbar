@@ -12,11 +12,10 @@ NetworkControlPanel::NetworkControlPanel(QWidget *parent)
 {
     m_layout->setMargin(0);
     m_layout->setSpacing(0);
-
+    m_layout->setContentsMargins(0, 0, 0, 0);
     m_layout->addWidget(m_listView);
-
-    m_listView->setFixedSize(400, 600);
-
+    m_listView->setContentsMargins(0, 0, 0, 0);
+    
     setLayout(m_layout);
 }
 
@@ -26,4 +25,12 @@ void NetworkControlPanel::setModel(NetworkListModel * const model)
     m_listView->setModel(model);
 
     connect(m_listView, &NetworkListView::entered, model, &NetworkListModel::setHoverIndex);
+}
+
+
+void NetworkControlPanel::adjustWidgetSize()
+{
+    int height = m_listModel->rowCount() * 50;
+    resize(400, height);
+    emit sizeChanged(400, height);
 }

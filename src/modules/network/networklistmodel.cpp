@@ -6,11 +6,11 @@
 using namespace dtb;
 using namespace dtb::network;
 
-NetworkListModel::NetworkListModel(QObject *parent)
+NetworkListModel::NetworkListModel(NetworkControlPanel *m_controlPanel, QObject *parent)
     : QAbstractListModel(parent)
     , m_currentWirelessDevice(nullptr)
 {
-
+    this->m_controlPanel = m_controlPanel;
 }
 
 void NetworkListModel::setDeviceList(const QMap<QString, dde::network::NetworkDevice *> list)
@@ -58,6 +58,12 @@ int NetworkListModel::rowCount(const QModelIndex &parent) const
     return m_apMap[m_currentWirelessDevice].size();
 }
 
+int NetworkListModel::rowCount()
+{
+    if (!m_currentWirelessDevice) return 0;
+    return m_apMap[m_currentWirelessDevice].size();
+}
+
 QVariant NetworkListModel::data(const QModelIndex &index, int role) const
 {
     if (!m_currentWirelessDevice) return QVariant();
@@ -67,10 +73,8 @@ QVariant NetworkListModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case NameRole:
         return m_apMap[m_currentWirelessDevice][row].ssid();
-        break;
     case SizeRole:
-        return QSize(400, 50);
-        break;
+        return QSize(350, 48);
     case HoverRole:
         return index == m_hoverIndex;
     case IconRole:
@@ -104,6 +108,7 @@ void NetworkListModel::APAdded(const QJsonObject &obj)
 
     // refresh
     emit layoutChanged();
+    QMetaObject::invokeMethod(m_controlPanel, "adjustWidgetSize", Qt::QueuedConnection);
 }
 
 void NetworkListModel::APRemoved(const QJsonObject &obj)
@@ -115,6 +120,7 @@ void NetworkListModel::APRemoved(const QJsonObject &obj)
 
     // refresh
     emit layoutChanged();
+    QMetaObject::invokeMethod(m_controlPanel, "adjustWidgetSize", Qt::QueuedConnection);
 }
 
 void NetworkListModel::APPropertiesChanged(const QJsonObject &apInfo)
@@ -143,11 +149,13 @@ bool NetworkListModel::isSecurity(const QModelIndex &index) const
 
 const QString NetworkListModel::icon(const QModelIndex &index) const
 {
-    const int strenght = m_apMap[m_currentWirelessDevice][index.row()].strength() / 10;
+    int strenght = m_apMap[m_currentWirelessDevice][index.row()].strength() / 10;
+
+    if(strenght > 9) strenght = 9;
 
     int value = 0;
-    for (int i = 0; i != 11; i++) {
-        if (strenght < i) {
+    for (int i = 0; i <= 9; i++) {
+        if (strenght <= i) {
             value = i;
             break;
         }

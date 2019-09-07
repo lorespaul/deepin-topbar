@@ -24,6 +24,14 @@ QWidget *Item::contextMenu() const
     return nullptr;
 }
 
+
+void Item::resizePopupWindow(int width, int height)
+{
+    if (PopupWindow.get()) {
+        PopupWindow->setFixedSize(QSize(width, height));
+    }
+}
+
 void Item::hidePopupWindow()
 {
     if (PopupWindow.get()) {

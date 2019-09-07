@@ -63,6 +63,17 @@ void MainPanel::initConnect()
     });
 }
 
+
+PluginsItem* MainPanel::getItem(PluginsItemInterface * const module, const QString &itemKey)
+{
+    if (m_moduleMap.contains(module))
+        if (m_moduleMap[module].contains(itemKey))
+            return m_moduleMap[module][itemKey];
+    
+    return NULL;
+}
+
+
 void MainPanel::addItem(PluginsItemInterface * const module, const QString &itemKey)
 {
     // check

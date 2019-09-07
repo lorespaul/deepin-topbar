@@ -32,7 +32,9 @@ void NetworkDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
     QRect pixRect(option.rect.topLeft(), pixmap.size());
     painter->drawPixmap(pixRect, pixmap);
 
-    QRect textRect(pixRect.topRight(), QSize(option.fontMetrics.width(name) + 10, option.fontMetrics.height()));
+    QPoint p = pixRect.topRight();
+    p.setY(p.y() + 17);
+    QRect textRect(p, QSize(option.fontMetrics.width(name) + 200, option.fontMetrics.height()));
     painter->setPen(Qt::white);
     painter->drawText(textRect, name);
 

@@ -10,6 +10,10 @@ ItemPopupWindow::ItemPopupWindow(QWidget *parent)
             m_regionMonitor->unregisterRegion();
         }
     }, Qt::QueuedConnection);
+    
+    setMargin(0);
+    setContentsMargins(0, 0, 0, 0);
+    // setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
 void ItemPopupWindow::show(int x, int y)

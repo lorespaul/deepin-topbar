@@ -17,8 +17,10 @@ public:
     void setModel(NetworkListModel * const model);
 
 signals:
+    void sizeChanged(int width, int height);
 
 public slots:
+    void adjustWidgetSize();
 
 private:
     QVBoxLayout *m_layout;

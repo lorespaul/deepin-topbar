@@ -1,6 +1,9 @@
 #include "networkplugin.h"
 #include "networklistmodel.h"
 
+#include "../../frame/item/pluginsitem.h"
+#include "../../frame/mainpanel.h"
+
 #include <DHiDPIHelper>
 
 using namespace dtb;
@@ -12,13 +15,17 @@ DWIDGET_USE_NAMESPACE
 
 NetworkPlugin::NetworkPlugin()
 {
-    m_networkWidget = new QLabel("网络");
+    m_networkWidget = new QLabel("P");
+    m_networkWidget->setStyleSheet("QLabel{color: white;}");
     m_controlPanel = new NetworkControlPanel;
     m_delayRefreshTimer = new QTimer(this);
     m_networkModel = new NetworkModel;
     m_networkWorker = new NetworkWorker(m_networkModel);
-    m_listModel = new NetworkListModel;
+    m_listModel = new NetworkListModel(m_controlPanel);
     m_controlPanel->setModel(m_listModel);
+
+    m_networkModel->moveToThread(qApp->thread());
+    m_networkWorker->moveToThread(qApp->thread());
 }
 
 const QString NetworkPlugin::pluginName() const
@@ -38,6 +45,9 @@ void NetworkPlugin::init(PluginProxyInterface *proxyInter)
 
     m_networkWorker->active();
     m_proxyInter->addItem(this, "network");
+
+    PluginsItem* item = ((MainPanel*)m_proxyInter)->getItem(this, "network");
+    connect(m_controlPanel, &NetworkControlPanel::sizeChanged, item, &PluginsItem::resizePopupWindow);
 
     onDeviceListChanged(m_networkModel->devices());
 }
@@ -92,18 +102,7 @@ void NetworkPlugin::onDeviceListChanged(const QList<NetworkDevice *> devices)
         }
     }
 
-//    int wirelessItemCount = wirelessItems.size();
-//    for (int i = 0; i < wirelessItemCount; ++i) {
-//        QTimer::singleShot(1, [=] {
-//            wirelessItems.at(i)->setDeviceInfo(wirelessItemCount == 1 ? -1 : i + 1);
-//        });
-//    }
-
     m_listModel->setDeviceList(m_itemsMap);
-
-    if (!m_itemsMap.isEmpty()) {
-
-    }
 
     m_delayRefreshTimer->start();
 }
