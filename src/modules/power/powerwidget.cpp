@@ -30,7 +30,7 @@ PowerWidget::PowerWidget(QWidget *parent)
     QHBoxLayout *layout = new QHBoxLayout;
     layout->setMargin(0);
     layout->setSpacing(0);
-    layout->setContentsMargins(5, 0, 0, 0);
+    layout->setContentsMargins(5, 0, 5, 0);
     layout->addWidget(m_batteryIcon, 0, Qt::AlignVCenter);
     layout->addSpacing(6);
     layout->addWidget(m_battery, 0, Qt::AlignVCenter);

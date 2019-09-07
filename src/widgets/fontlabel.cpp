@@ -29,7 +29,7 @@ void FontLabel::setIcon(QPixmap pixmap)
 {
     pixmap.setDevicePixelRatio(qApp->devicePixelRatio());
     setPixmap(pixmap);
-    setContentsMargins(5, 0, 0, 0);
+    setContentsMargins(5, 0, 5, 0);
 }
 
 void FontLabel::mouseReleaseEvent(QMouseEvent *event)

@@ -61,7 +61,7 @@ SystemInfoWidget::SystemInfoWidget(QWidget *parent)
     networklayout->setSpacing(0);
     networklayout->addLayout(uploadlayout);
     networklayout->addLayout(downlayout);
-    networklayout->setContentsMargins(5, 0, 0, 0);
+    networklayout->setContentsMargins(5, 0, 5, 0);
 
     QLabel *cpuIcon = new QLabel();
     cpuIcon->setPixmap(DHiDPIHelper::loadNxPixmap(":/icon_cpu_dark.svg").scaled(QSize(24, 24) * devicePixelRatioF(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
@@ -78,7 +78,7 @@ SystemInfoWidget::SystemInfoWidget(QWidget *parent)
     QHBoxLayout *mainLayout = new QHBoxLayout();
     mainLayout->setMargin(0);
     mainLayout->setSpacing(0);
-   mainLayout->setContentsMargins(5, 0, 0, 0);
+   mainLayout->setContentsMargins(5, 0, 5, 0);
     mainLayout->addLayout(memLayout);
     mainLayout->addLayout(cpuLayout);
     mainLayout->addLayout(networklayout);
