@@ -6,11 +6,16 @@
 #include "networklistview.h"
 #include "networkcontrolpanel.h"
 
+#include "../../widgets/fontlabel.h"
+
 #include <QLabel>
 #include <NetworkWorker>
 #include <NetworkModel>
 #include <NetworkDevice>
 #include <QObject>
+
+using namespace dde::network;
+using namespace dtb::widgets;
 
 namespace dtb {
 namespace network {
@@ -32,6 +37,7 @@ public:
 private slots:
     void refreshWiredItemVisible();
     void onDeviceListChanged(const QList<dde::network::NetworkDevice *> devices);
+    void onConnectivityChanged(Connectivity Connectivity);
 
 private:
     PluginProxyInterface *m_proxyInter;
@@ -39,7 +45,7 @@ private:
     dde::network::NetworkModel *m_networkModel;
     dde::network::NetworkWorker *m_networkWorker;
     QMap<QString, dde::network::NetworkDevice *> m_itemsMap;
-    QLabel *m_networkWidget;
+    FontLabel *m_networkWidget;
     NetworkListModel *m_listModel;
     NetworkControlPanel *m_controlPanel;
 };

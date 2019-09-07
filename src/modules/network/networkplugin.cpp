@@ -15,8 +15,9 @@ DWIDGET_USE_NAMESPACE
 
 NetworkPlugin::NetworkPlugin()
 {
-    m_networkWidget = new QLabel("P");
-    m_networkWidget->setStyleSheet("QLabel{color: white;}");
+    m_networkWidget = new FontLabel;
+    m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-disconnect-symbolic.svg")));
+    
     m_controlPanel = new NetworkControlPanel;
     m_delayRefreshTimer = new QTimer(this);
     m_networkModel = new NetworkModel;
@@ -42,6 +43,7 @@ void NetworkPlugin::init(PluginProxyInterface *proxyInter)
 
     connect(m_delayRefreshTimer, &QTimer::timeout, this, &NetworkPlugin::refreshWiredItemVisible);
     connect(m_networkModel, &NetworkModel::deviceListChanged, this, &NetworkPlugin::onDeviceListChanged);
+    connect(m_networkModel, &NetworkModel::connectivityChanged, this, &NetworkPlugin::onConnectivityChanged);
 
     m_networkWorker->active();
     m_proxyInter->addItem(this, "network");
@@ -105,4 +107,24 @@ void NetworkPlugin::onDeviceListChanged(const QList<NetworkDevice *> devices)
     m_listModel->setDeviceList(m_itemsMap);
 
     m_delayRefreshTimer->start();
+}
+
+
+void NetworkPlugin::onConnectivityChanged(Connectivity connectivity)
+{
+    if(connectivity == Connectivity::NoConnectivity || connectivity == Connectivity::UnknownConnectivity)
+    {
+        qDebug("connectivity 1");
+        m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-disconnect-symbolic.svg")));
+    } 
+    else if(connectivity == Connectivity::Limited) 
+    {
+        qDebug("connectivity 2");
+        m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-2-symbolic.svg")));
+    }
+    else if(connectivity == Connectivity::Limited)
+    {
+        qDebug("connectivity 3");
+        m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-8-symbolic.svg")));
+    }
 }

@@ -74,6 +74,17 @@ PluginsItem* MainPanel::getItem(PluginsItemInterface * const module, const QStri
 }
 
 
+void MainPanel::closeAllPluginsItem()
+{
+    QMap<PluginsItemInterface*, QMap<QString, PluginsItem*>>::iterator i;
+    for(i = m_moduleMap.begin(); i != m_moduleMap.end(); i++){
+        for (PluginsItem * item : i->values()) {
+            item->hidePopupWindow();
+        }
+    }
+}
+
+
 void MainPanel::addItem(PluginsItemInterface * const module, const QString &itemKey)
 {
     // check
@@ -82,7 +93,7 @@ void MainPanel::addItem(PluginsItemInterface * const module, const QString &item
         if (m_moduleMap[module].contains(itemKey))
             return;
 
-    PluginsItem *item = new PluginsItem(module, itemKey);
+    PluginsItem *item = new PluginsItem(this, module, itemKey);
 
     m_moduleMap[module][itemKey] = item;
 

@@ -6,11 +6,13 @@
 #include <QWidget>
 
 namespace dtb {
+
+class MainPanel;
 class PluginsItem : public Item
 {
     Q_OBJECT
 public:
-    explicit PluginsItem(PluginsItemInterface* const pluginInter, const QString &itemKey, QWidget *parent = 0);
+    explicit PluginsItem(MainPanel* mainPanel, PluginsItemInterface* const pluginInter, const QString &itemKey, QWidget *parent = 0);
     ~PluginsItem();
 
     const QString name() const Q_DECL_OVERRIDE;
@@ -30,6 +32,7 @@ protected slots:
     void showTips();
 
 private:
+    MainPanel *mainPanel;
     PluginsItemInterface * m_pluginInter;
     QWidget *m_centralWidget;
     QString m_itemKey;

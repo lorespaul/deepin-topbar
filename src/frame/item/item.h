@@ -22,7 +22,7 @@ public slots:
     void resizePopupWindow(int width, int height);
 
 protected:
-    static std::unique_ptr<ItemPopupWindow> PopupWindow;
+    ItemPopupWindow* PopupWindow;
 };
 }
 

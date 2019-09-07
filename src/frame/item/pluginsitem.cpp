@@ -9,15 +9,18 @@
 #include <QPainter>
 
 #include "contentmodule.h"
+#include "../../frame/mainpanel.h"
 
 using namespace dtb;
 
-PluginsItem::PluginsItem(PluginsItemInterface * const pluginInter, const QString &itemKey, QWidget *parent)
+PluginsItem::PluginsItem(MainPanel* mainPanel, PluginsItemInterface * const pluginInter, const QString &itemKey, QWidget *parent)
     : Item(parent)
     , m_pluginInter(pluginInter)
     , m_centralWidget(pluginInter->itemWidget(itemKey))
     , m_itemKey(itemKey)
 {
+    this->mainPanel = mainPanel;
+
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->setMargin(0);
     mainLayout->setSpacing(0);
@@ -43,7 +46,7 @@ PluginsItemInterface *PluginsItem::itemInter()
 void PluginsItem::mouseReleaseEvent(QMouseEvent *event)
 {
     Item::mouseReleaseEvent(event);
-
+    mainPanel->closeAllPluginsItem();
     showTips();
 }
 

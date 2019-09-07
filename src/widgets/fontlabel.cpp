@@ -1,5 +1,6 @@
 #include "widgets/fontlabel.h"
 
+#include <QApplication>
 #include <QFile>
 #include <QFont>
 #include <QFontDatabase>
@@ -24,8 +25,9 @@ void FontLabel::setIcon(const QChar c, int size)
     setText(c);
 }
 
-void FontLabel::setIcon(const QPixmap pixmap)
+void FontLabel::setIcon(QPixmap pixmap)
 {
+    pixmap.setDevicePixelRatio(qApp->devicePixelRatio());
     setPixmap(pixmap);
     setContentsMargins(5, 0, 0, 0);
 }

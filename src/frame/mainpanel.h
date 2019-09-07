@@ -28,6 +28,7 @@ public:
 
     void hidePopupWindow() Q_DECL_OVERRIDE;
     void showSettingDialog();
+    void closeAllPluginsItem();
 
 private slots:
     void loadModules();
