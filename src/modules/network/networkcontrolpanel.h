@@ -1,8 +1,12 @@
 #ifndef NETWORKCONTROLPANEL_H
 #define NETWORKCONTROLPANEL_H
 
+#include <NetworkWorker>
+
 #include <QWidget>
 #include <QVBoxLayout>
+
+using namespace dde::network;
 
 namespace dtb {
 namespace network {
@@ -12,9 +16,7 @@ class NetworkControlPanel : public QWidget
 {
     Q_OBJECT
 public:
-    explicit NetworkControlPanel(QWidget *parent = nullptr);
-
-    void setModel(NetworkListModel * const model);
+    explicit NetworkControlPanel(NetworkWorker *networkWorker, NetworkListModel *model, QWidget *parent = nullptr);
 
 signals:
     void sizeChanged(int width, int height);
@@ -25,7 +27,8 @@ public slots:
 private:
     QVBoxLayout *m_layout;
     NetworkListView *m_listView;
-    NetworkListModel *m_listModel;
+    NetworkListModel * const m_listModel;
+    NetworkWorker * const m_networkWorker;
 };
 }
 }

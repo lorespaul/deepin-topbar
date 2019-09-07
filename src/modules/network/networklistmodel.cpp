@@ -6,11 +6,11 @@
 using namespace dtb;
 using namespace dtb::network;
 
-NetworkListModel::NetworkListModel(NetworkControlPanel *m_controlPanel, QObject *parent)
+NetworkListModel::NetworkListModel(QObject *parent)
     : QAbstractListModel(parent)
     , m_currentWirelessDevice(nullptr)
 {
-    this->m_controlPanel = m_controlPanel;
+
 }
 
 void NetworkListModel::setDeviceList(const QMap<QString, dde::network::NetworkDevice *> list)
@@ -64,6 +64,21 @@ int NetworkListModel::rowCount()
     return m_apMap[m_currentWirelessDevice].size();
 }
 
+AccessPoint* NetworkListModel::getAP(const QModelIndex &index)
+{
+    if (!m_currentWirelessDevice) return NULL;
+
+    const int row { index.row() };
+
+    return &m_apMap[m_currentWirelessDevice][row];
+}
+
+NetworkDevice* NetworkListModel::getCurrentNetworkDevice()
+{
+    return m_currentWirelessDevice;
+}
+
+
 QVariant NetworkListModel::data(const QModelIndex &index, int role) const
 {
     if (!m_currentWirelessDevice) return QVariant();
@@ -108,7 +123,6 @@ void NetworkListModel::APAdded(const QJsonObject &obj)
 
     // refresh
     emit layoutChanged();
-    QMetaObject::invokeMethod(m_controlPanel, "adjustWidgetSize", Qt::QueuedConnection);
 }
 
 void NetworkListModel::APRemoved(const QJsonObject &obj)
@@ -120,7 +134,6 @@ void NetworkListModel::APRemoved(const QJsonObject &obj)
 
     // refresh
     emit layoutChanged();
-    QMetaObject::invokeMethod(m_controlPanel, "adjustWidgetSize", Qt::QueuedConnection);
 }
 
 void NetworkListModel::APPropertiesChanged(const QJsonObject &apInfo)

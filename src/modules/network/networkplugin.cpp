@@ -18,12 +18,11 @@ NetworkPlugin::NetworkPlugin()
     m_networkWidget = new FontLabel;
     m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-disconnect-symbolic.svg")));
     
-    m_controlPanel = new NetworkControlPanel;
     m_delayRefreshTimer = new QTimer(this);
     m_networkModel = new NetworkModel;
     m_networkWorker = new NetworkWorker(m_networkModel);
-    m_listModel = new NetworkListModel(m_controlPanel);
-    m_controlPanel->setModel(m_listModel);
+    m_listModel = new NetworkListModel;
+    m_controlPanel = new NetworkControlPanel(m_networkWorker, m_listModel);
 
     m_networkModel->moveToThread(qApp->thread());
     m_networkWorker->moveToThread(qApp->thread());
@@ -122,7 +121,7 @@ void NetworkPlugin::onConnectivityChanged(Connectivity connectivity)
         qDebug("connectivity 2");
         m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-2-symbolic.svg")));
     }
-    else if(connectivity == Connectivity::Limited)
+    else if(connectivity == Connectivity::Full)
     {
         qDebug("connectivity 3");
         m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-8-symbolic.svg")));

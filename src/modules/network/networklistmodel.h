@@ -17,7 +17,7 @@ class NetworkListModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    explicit NetworkListModel(NetworkControlPanel *m_controlPanel, QObject *parent = nullptr);
+    explicit NetworkListModel(QObject *parent = nullptr);
     void setDeviceList(const QMap<QString, dde::network::NetworkDevice *> list);
 
     enum ListRole {
@@ -30,10 +30,12 @@ public:
 
     void setHoverIndex(const QModelIndex &index);
     int rowCount();
+    QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
+    AccessPoint* getAP(const QModelIndex &index);
+    NetworkDevice* getCurrentNetworkDevice();
 
 protected:
     int rowCount(const QModelIndex &parent) const Q_DECL_OVERRIDE;
-    QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
 
 private:
     void onActivateConnectChanged();
