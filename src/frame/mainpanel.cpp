@@ -172,9 +172,9 @@ void MainPanel::loadModules()
 
     loadModule(new sound::SoundPlugin);
 
-// #ifdef QT_DEBUG
-//     loadModule(new network::NetworkPlugin);
-// #endif
+#ifdef QT_DEBUG
+    loadModule(new network::NetworkPlugin);
+#endif
 
     loadModule(new power::PowerPlugin);
 

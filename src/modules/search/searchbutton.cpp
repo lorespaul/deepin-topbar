@@ -35,7 +35,7 @@ SearchButton::SearchButton(QFrame *parent)
 
     layout->setMargin(0);
     layout->setSpacing(0);
-    layout->setContentsMargins(5, 0, 5, 0);
+    layout->setContentsMargins(5, 0, 0, 0);
 
     FontLabel *label = new FontLabel;
     label->setStyleSheet("QLabel{color: white;}");
