@@ -5,10 +5,11 @@
 using namespace dtb;
 using namespace dtb::network;
 
-NetworkControlPanel::NetworkControlPanel(NetworkWorker *networkWorker, NetworkListModel *model, QWidget *parent)
+NetworkControlPanel::NetworkControlPanel(NetworkPlugin *networkPlugin, NetworkWorker *networkWorker, NetworkListModel *model, QWidget *parent)
     : QWidget(parent)
     , m_layout(new QVBoxLayout)
     , m_listView(new NetworkListView)
+    , m_networkPlugin(networkPlugin)
     , m_networkWorker(networkWorker)
     , m_listModel(model)
 {
@@ -25,15 +26,36 @@ NetworkControlPanel::NetworkControlPanel(NetworkWorker *networkWorker, NetworkLi
 
     connect(m_listView, &NetworkListView::entered, model, &NetworkListModel::setHoverIndex);
     connect(m_listView, &NetworkListView::clicked, this, [=](const QModelIndex &index){
-        AccessPoint *ap = m_listModel->getAP(index);
-        m_networkWorker->activateAccessPoint(m_listModel->getCurrentNetworkDevice()->path(), ap->path(), ap->ssid());
-        qDebug("connect to devPath " + m_listModel->getCurrentNetworkDevice()->path().toUtf8() + ", apPath " + ap->path().toUtf8() + ", ssid " + ap->ssid().toUtf8());
+        NetworkDevice *networkDevice = m_listModel->getCurrentNetworkDevice();
+
+        if(networkDevice->type() == NetworkDevice::Wireless){
+            
+            WirelessDevice *device = (WirelessDevice*)networkDevice;
+            AccessPoint *ap = m_listModel->getAP(index);
+            QString ssid = ap->ssid();
+            m_networkPlugin->connectingSsid = ssid;
+            m_networkPlugin->startConnectingTimer();
+            QString uuid;
+            QList<QJsonObject> connections = device->connections();
+            for (auto item : connections) {
+                if (item.value("Ssid").toString() != ssid)
+                    continue;
+
+                uuid = item.value("Uuid").toString();
+                if (!uuid.isEmpty())
+                    break;
+            }
+
+            m_networkWorker->activateAccessPoint(device->path(), ap->path(), uuid);
+        }
     });
+
+    //TODO: add wifi on/off + refresh aps controls
 }
 
 
 void NetworkControlPanel::adjustWidgetSize()
 {
-    resize(360, m_listModel->rowCount() * 50);
-    emit sizeChanged(360, m_listModel->rowCount() * 52);
+    resize(360, m_listModel->rowCount() * 34);
+    emit sizeChanged(360, m_listModel->rowCount() * 36);
 }

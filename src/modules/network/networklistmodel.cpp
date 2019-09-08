@@ -13,7 +13,7 @@ NetworkListModel::NetworkListModel(QObject *parent)
 
 }
 
-void NetworkListModel::setDeviceList(const QMap<QString, dde::network::NetworkDevice *> list)
+void NetworkListModel::setDeviceList(const QMap<QString, dde::network::NetworkDevice *> list, NetworkPlugin *networkPlugin)
 {
     m_wiredList.clear();
     m_wirelessList.clear();
@@ -32,6 +32,11 @@ void NetworkListModel::setDeviceList(const QMap<QString, dde::network::NetworkDe
             connect(device, &dde::network::WirelessDevice::apAdded, this, &NetworkListModel::APAdded);
             connect(device, &dde::network::WirelessDevice::apRemoved, this, &NetworkListModel::APRemoved);
             connect(device, &dde::network::WirelessDevice::apInfoChanged, this, &NetworkListModel::APPropertiesChanged);
+            connect(device, &dde::network::WirelessDevice::activeApInfoChanged, networkPlugin, &NetworkPlugin::onActiveAPInfoChanged);
+
+            QTimer::singleShot(1000, this, [=]{
+                networkPlugin->onActiveAPInfoChanged(device->activeApInfo());
+            });
 
             for (auto ap : device->apList()) {
                 emit device->apAdded(ap.toObject());
@@ -89,7 +94,7 @@ QVariant NetworkListModel::data(const QModelIndex &index, int role) const
     case NameRole:
         return m_apMap[m_currentWirelessDevice][row].ssid();
     case SizeRole:
-        return QSize(350, 48);
+        return QSize(350, 34);
     case HoverRole:
         return index == m_hoverIndex;
     case IconRole:
@@ -162,13 +167,21 @@ bool NetworkListModel::isSecurity(const QModelIndex &index) const
 
 const QString NetworkListModel::icon(const QModelIndex &index) const
 {
-    int strenght = m_apMap[m_currentWirelessDevice][index.row()].strength() / 10;
+    int strength = m_apMap[m_currentWirelessDevice][index.row()].strength();
 
-    if(strenght > 9) strenght = 9;
+    int value = normalizeStrength(strength);
+
+    return QString(":/wireless/resources/wireless/wireless-%1.svg").arg(value);
+}
+
+int NetworkListModel::normalizeStrength(int strength)
+{
+    strength /= 10;
+    if(strength > 9) strength = 9;
 
     int value = 0;
     for (int i = 0; i <= 9; i++) {
-        if (strenght <= i) {
+        if (strength <= i) {
             value = i;
             break;
         }
@@ -178,5 +191,5 @@ const QString NetworkListModel::icon(const QModelIndex &index) const
         value -= 1;
     }
 
-    return QString(":/wireless/resources/wireless/wireless-%1.svg").arg(value);
+    return value;
 }

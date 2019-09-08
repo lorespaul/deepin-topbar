@@ -4,6 +4,7 @@
 #include "item/applet/accesspoint.h"
 
 #include "networkcontrolpanel.h"
+#include "networkplugin.h"
 
 #include <QObject>
 #include <QAbstractListModel>
@@ -18,7 +19,7 @@ class NetworkListModel : public QAbstractListModel
     Q_OBJECT
 public:
     explicit NetworkListModel(QObject *parent = nullptr);
-    void setDeviceList(const QMap<QString, dde::network::NetworkDevice *> list);
+    void setDeviceList(const QMap<QString, dde::network::NetworkDevice *> list, NetworkPlugin *networkPlugin);
 
     enum ListRole {
         NameRole = Qt::DisplayRole,
@@ -33,6 +34,8 @@ public:
     QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
     AccessPoint* getAP(const QModelIndex &index);
     NetworkDevice* getCurrentNetworkDevice();
+
+    static int normalizeStrength(int strength);
 
 protected:
     int rowCount(const QModelIndex &parent) const Q_DECL_OVERRIDE;
@@ -53,6 +56,7 @@ private:
     dde::network::WirelessDevice *m_currentWirelessDevice;
     NetworkControlPanel *m_controlPanel;
     QModelIndex m_hoverIndex;
+
 };
 }
 }

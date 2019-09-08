@@ -22,7 +22,7 @@ NetworkPlugin::NetworkPlugin()
     m_networkModel = new NetworkModel;
     m_networkWorker = new NetworkWorker(m_networkModel);
     m_listModel = new NetworkListModel;
-    m_controlPanel = new NetworkControlPanel(m_networkWorker, m_listModel);
+    m_controlPanel = new NetworkControlPanel(this, m_networkWorker, m_listModel);
 
     m_networkModel->moveToThread(qApp->thread());
     m_networkWorker->moveToThread(qApp->thread());
@@ -43,6 +43,7 @@ void NetworkPlugin::init(PluginProxyInterface *proxyInter)
     connect(m_delayRefreshTimer, &QTimer::timeout, this, &NetworkPlugin::refreshWiredItemVisible);
     connect(m_networkModel, &NetworkModel::deviceListChanged, this, &NetworkPlugin::onDeviceListChanged);
     connect(m_networkModel, &NetworkModel::connectivityChanged, this, &NetworkPlugin::onConnectivityChanged);
+    connect(m_networkModel, &NetworkModel::activeConnectionsChanged, this, &NetworkPlugin::onActiveConnectionsChanged);
 
     m_networkWorker->active();
     m_proxyInter->addItem(this, "network");
@@ -103,7 +104,7 @@ void NetworkPlugin::onDeviceListChanged(const QList<NetworkDevice *> devices)
         }
     }
 
-    m_listModel->setDeviceList(m_itemsMap);
+    m_listModel->setDeviceList(m_itemsMap, this);
 
     m_delayRefreshTimer->start();
 }
@@ -111,19 +112,88 @@ void NetworkPlugin::onDeviceListChanged(const QList<NetworkDevice *> devices)
 
 void NetworkPlugin::onConnectivityChanged(Connectivity connectivity)
 {
-    if(connectivity == Connectivity::NoConnectivity || connectivity == Connectivity::UnknownConnectivity)
-    {
-        qDebug("connectivity 1");
+    if(connectivity == Connectivity::NoConnectivity || connectivity == Connectivity::UnknownConnectivity){
+
         m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-disconnect-symbolic.svg")));
-    } 
-    else if(connectivity == Connectivity::Limited) 
-    {
-        qDebug("connectivity 2");
-        m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-2-symbolic.svg")));
     }
-    else if(connectivity == Connectivity::Full)
-    {
-        qDebug("connectivity 3");
-        m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-8-symbolic.svg")));
+}
+
+
+
+void NetworkPlugin::onActiveAPInfoChanged(const QJsonObject &info)
+{
+    if(NetworkModel::connectivity() == Connectivity::NoConnectivity || NetworkModel::connectivity() == Connectivity::UnknownConnectivity){
+
+        return;
+    }
+
+    int strength = info.value("Strength").toInt();
+    int value = NetworkListModel::normalizeStrength(strength);
+
+    QString iconPath = QString(":/wireless/resources/wireless/wireless-%1-symbolic.svg").arg(value);
+    m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(iconPath));
+}
+
+
+void NetworkPlugin::onActiveConnectionsChanged(const QList<QJsonObject> &activeConns)
+{
+    if(connectingSsid == "")
+        return;
+
+    for(auto conn : activeConns){
+        QString connSsid = conn.value("Id").toString();
+        if(connSsid != connectingSsid)
+            continue;
+
+        // 0:Unknow, 1:Activating, 2:Activated, 3:Deactivating, 4:Deactivated
+        int state = conn.value("State").toInt();
+        if(state == 2) {
+            stopConnectingTimer();
+            connectingSsid = "";
+        }
+        break;
+    }
+}
+
+
+void NetworkPlugin::startConnectingTimer()
+{
+
+    if(m_connectingTimer == nullptr){
+
+        m_connectingTimer = new QTimer(this);
+        m_connectingTimer->setSingleShot(false);
+        m_connectingTimer->setInterval(500);
+        
+        connect(m_connectingTimer, &QTimer::timeout, this, &NetworkPlugin::timeoutConnectingTimer);
+
+    }
+    m_connectingTimer->start();
+}
+
+
+void NetworkPlugin::timeoutConnectingTimer()
+{
+  
+    QString iconPath = QString(":/wireless/resources/wireless/wireless-%1-symbolic.svg").arg(connectingIcon);
+    m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(iconPath));
+    
+    connectingIcon = (connectingIcon + 2) % 10;
+    if(connectingIcon == 0) 
+        connectingIcon = 2;
+}
+    
+
+void NetworkPlugin::stopConnectingTimer()
+{
+
+    if(m_connectingTimer != nullptr){
+        
+        m_connectingTimer->stop();
+        m_connectingTimer->deleteLater();
+        m_connectingTimer = nullptr;
+        
+        connectingIcon = 2;
+
     }
 }
