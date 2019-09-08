@@ -25,6 +25,7 @@ public:
         NameRole = Qt::DisplayRole,
         SizeRole = Qt::SizeHintRole,
         HoverRole,
+        ActiveRole,
         IconRole,
         SecurityRole,
     };

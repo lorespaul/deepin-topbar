@@ -97,6 +97,8 @@ QVariant NetworkListModel::data(const QModelIndex &index, int role) const
         return QSize(350, 34);
     case HoverRole:
         return index == m_hoverIndex;
+    case ActiveRole:
+        return m_currentWirelessDevice->activeApSsid() == m_apMap[m_currentWirelessDevice][row].ssid();
     case IconRole:
         return icon(index);
     case SecurityRole:

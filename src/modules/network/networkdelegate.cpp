@@ -27,7 +27,21 @@ void NetworkDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
     if (index.data(NetworkListModel::HoverRole).toBool()) {
         painter->fillRect(option.rect, QColor(0, 0, 0, 0.1 * 255));
 
-        //TODO: show ap connected/deactive ap connection
+        if(index.data(NetworkListModel::ActiveRole).toBool()){
+
+            //TODO: show ap connected/deactive ap connection
+            QPoint selectedIconPoint(option.rect.topRight());
+            selectedIconPoint.setX(selectedIconPoint.x() - 23);
+            selectedIconPoint.setY(selectedIconPoint.y() + 6);
+            drawPixmap(painter, ":/wireless/resources/wireless/disconnect.png", QSize(14, 14), selectedIconPoint);
+        }
+
+    } else if(index.data(NetworkListModel::ActiveRole).toBool()){
+
+        QPoint selectedIconPoint(option.rect.topRight());
+        selectedIconPoint.setX(selectedIconPoint.x() - 23);
+        selectedIconPoint.setY(selectedIconPoint.y() + 6);
+        drawPixmap(painter, ":/wireless/resources/wireless/selected.png", QSize(14, 14), selectedIconPoint);
     }
 
     QPoint cachedTopLeft = QPoint(option.rect.topLeft());
@@ -47,21 +61,28 @@ void NetworkDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
     painter->setPen(Qt::white);
     painter->drawText(textRect, name);
 
-    if (isSecurity) {
-        QPixmap securityPixmap;
-        QImageReader reader;
-        qreal sourceDevicePixelRatio = 1.0;
-        qreal devicePixelRatio = qApp->devicePixelRatio();
-        reader.setFileName(":/wireless/resources/wireless/security.svg");
-        if (reader.canRead()) {
-            reader.setScaledSize(QSize(23, 23) * (devicePixelRatio / sourceDevicePixelRatio));
-            securityPixmap = QPixmap::fromImage(reader.read());
-            securityPixmap.setDevicePixelRatio(devicePixelRatio);
-        }
-        QRect securityRect(QPoint(cachedTopLeft.x(), cachedTopLeft.y() + 4), securityPixmap.size() / devicePixelRatio);
-        painter->drawPixmap(securityRect, securityPixmap);
-    }
+    if (isSecurity)
+        drawPixmap(painter, ":/wireless/resources/wireless/security.svg", QSize(23, 23), cachedTopLeft);
 }
+
+
+void NetworkDelegate::drawPixmap(QPainter *painter, QString path, QSize size, QPoint point) const
+{
+    QPixmap pixmap;
+    QImageReader reader;
+    qreal sourceDevicePixelRatio = 1.0;
+    qreal devicePixelRatio = qApp->devicePixelRatio();
+    reader.setFileName(path);
+    if (reader.canRead()) {
+        // reader.setScaledSize(size * (devicePixelRatio / sourceDevicePixelRatio));
+        pixmap = QPixmap::fromImage(reader.read())
+                    .scaled(size * (devicePixelRatio / sourceDevicePixelRatio), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        pixmap.setDevicePixelRatio(devicePixelRatio);
+    }
+    QRect securityRect(QPoint(point.x(), point.y() + 4), pixmap.size() / devicePixelRatio);
+    painter->drawPixmap(securityRect, pixmap);
+}
+
 
 QSize NetworkDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {

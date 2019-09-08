@@ -25,6 +25,9 @@ NetworkControlPanel::NetworkControlPanel(NetworkPlugin *networkPlugin, NetworkWo
     connect(m_listModel, &NetworkListModel::layoutChanged, this, &NetworkControlPanel::adjustWidgetSize);
 
     connect(m_listView, &NetworkListView::entered, model, &NetworkListModel::setHoverIndex);
+    // connect(m_listView, &NetworkListView::leaveEvent, model, &NetworkListModel::removeHoverIndex);
+
+
     connect(m_listView, &NetworkListView::clicked, this, [=](const QModelIndex &index){
         NetworkDevice *networkDevice = m_listModel->getCurrentNetworkDevice();
 
@@ -56,6 +59,6 @@ NetworkControlPanel::NetworkControlPanel(NetworkPlugin *networkPlugin, NetworkWo
 
 void NetworkControlPanel::adjustWidgetSize()
 {
-    resize(360, m_listModel->rowCount() * 34);
+    resize(360, m_listModel->rowCount() * 36);
     emit sizeChanged(360, m_listModel->rowCount() * 36);
 }

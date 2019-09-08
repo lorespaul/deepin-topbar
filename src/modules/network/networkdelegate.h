@@ -17,6 +17,10 @@ public:
 
     virtual QSize sizeHint(const QStyleOptionViewItem &option,
                            const QModelIndex &index) const;
+
+private:
+    virtual void drawPixmap(QPainter *painter, QString path, QSize size, QPoint point) const;
+
 };
 }
 }
