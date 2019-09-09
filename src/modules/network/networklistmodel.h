@@ -31,12 +31,14 @@ public:
     };
 
     void setHoverIndex(const QModelIndex &index);
+    void removeHoverIndex();
     int rowCount();
     QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
     AccessPoint* getAP(const QModelIndex &index);
     NetworkDevice* getCurrentNetworkDevice();
 
     static int normalizeStrength(int strength);
+    QModelIndex modelIndexBySsid(QString ssid);
 
 protected:
     int rowCount(const QModelIndex &parent) const Q_DECL_OVERRIDE;

@@ -38,6 +38,11 @@ DateTimeWidget::~DateTimeWidget() {
 }
 
 void DateTimeWidget::updateTime() {
+    if(m_24HourFormat){
+        m_timeLbl->setFixedWidth(140);
+    } else {
+        m_timeLbl->setFixedWidth(159);
+    }
     m_timeLbl->setText(m_dateTime->currentDateTime().toString(m_format + (m_24HourFormat ? "" : " A")));
 }
 

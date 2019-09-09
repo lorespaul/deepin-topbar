@@ -20,11 +20,6 @@ QWidget *Item::contextMenu() const
 }
 
 
-void Item::resizePopupWindow(int width, int height)
-{
-    PopupWindow->setFixedSize(QSize(width, height));
-}
-
 void Item::hidePopupWindow()
 {
     PopupWindow->hide();

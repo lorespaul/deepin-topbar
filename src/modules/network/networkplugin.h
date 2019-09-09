@@ -34,25 +34,27 @@ public:
 
     void setDefaultColor(PluginProxyInterface::DefaultColor color) Q_DECL_OVERRIDE;
 
-    void startConnectingTimer();
-    QString connectingSsid = "";
+    void startConnectingTimer(QString ssid);
 
 public slots:
     void onActiveAPInfoChanged(const QJsonObject &info);
+    void onActiveConnectionsChanged(const QList<QJsonObject> &activeConns);
 
 private slots:
     void refreshWiredItemVisible();
+    void refreshActiveConnection();
     void onDeviceListChanged(const QList<dde::network::NetworkDevice *> devices);
     void onConnectivityChanged(Connectivity Connectivity);
-    void onActiveConnectionsChanged(const QList<QJsonObject> &activeConns);
 
 private:
     PluginProxyInterface *m_proxyInter;
     QTimer *m_delayRefreshTimer;
+    QTimer *m_delayRefreshActiveConnection;
     QTimer *m_connectingTimer = nullptr;
     int connectingIcon = 2;
     void timeoutConnectingTimer();
     void stopConnectingTimer();
+    QString connectingSsid = "";
     dde::network::NetworkModel *m_networkModel;
     dde::network::NetworkWorker *m_networkWorker;
     QMap<QString, dde::network::NetworkDevice *> m_itemsMap;

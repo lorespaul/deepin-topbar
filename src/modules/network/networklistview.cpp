@@ -16,3 +16,9 @@ NetworkListView::NetworkListView(QWidget *parent)
     setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 }
+
+
+void NetworkListView::leaveEvent(QEvent *event)
+{
+    emit exited();
+}

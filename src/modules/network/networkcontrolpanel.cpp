@@ -17,16 +17,15 @@ NetworkControlPanel::NetworkControlPanel(NetworkPlugin *networkPlugin, NetworkWo
     m_layout->setSpacing(0);
     m_layout->setContentsMargins(0, 0, 0, 0);
     m_layout->addWidget(m_listView);
-    
     setLayout(m_layout);
+    setStyleSheet("border: none");
 
     m_listView->setModel(m_listModel);
 
     connect(m_listModel, &NetworkListModel::layoutChanged, this, &NetworkControlPanel::adjustWidgetSize);
 
     connect(m_listView, &NetworkListView::entered, model, &NetworkListModel::setHoverIndex);
-    // connect(m_listView, &NetworkListView::leaveEvent, model, &NetworkListModel::removeHoverIndex);
-
+    connect(m_listView, &NetworkListView::exited, model, &NetworkListModel::removeHoverIndex);
 
     connect(m_listView, &NetworkListView::clicked, this, [=](const QModelIndex &index){
         NetworkDevice *networkDevice = m_listModel->getCurrentNetworkDevice();
@@ -36,8 +35,7 @@ NetworkControlPanel::NetworkControlPanel(NetworkPlugin *networkPlugin, NetworkWo
             WirelessDevice *device = (WirelessDevice*)networkDevice;
             AccessPoint *ap = m_listModel->getAP(index);
             QString ssid = ap->ssid();
-            m_networkPlugin->connectingSsid = ssid;
-            m_networkPlugin->startConnectingTimer();
+            m_networkPlugin->startConnectingTimer(ssid);
             QString uuid;
             QList<QJsonObject> connections = device->connections();
             for (auto item : connections) {
@@ -59,6 +57,7 @@ NetworkControlPanel::NetworkControlPanel(NetworkPlugin *networkPlugin, NetworkWo
 
 void NetworkControlPanel::adjustWidgetSize()
 {
-    resize(360, m_listModel->rowCount() * 36);
-    emit sizeChanged(360, m_listModel->rowCount() * 36);
+    QSize size = m_listModel->data(m_listModel->index(0), NetworkListModel::SizeRole).toSize();
+    resize(size.width(), m_listModel->rowCount() * size.height());
+    emit sizeChanged();
 }

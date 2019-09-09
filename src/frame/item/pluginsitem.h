@@ -22,6 +22,9 @@ public:
 private:
     PluginsItemInterface *itemInter() Q_DECL_OVERRIDE;
 
+public slots:
+    void fitToContent();
+
 signals:
     void requestRefershWindowVisible() const;
 

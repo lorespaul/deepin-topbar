@@ -18,9 +18,6 @@ public:
     virtual QWidget* contextMenu() const;
     void hidePopupWindow();
 
-public slots:
-    void resizePopupWindow(int width, int height);
-
 protected:
     ItemPopupWindow* PopupWindow;
 };

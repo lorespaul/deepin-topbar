@@ -33,10 +33,7 @@ void NetworkListModel::setDeviceList(const QMap<QString, dde::network::NetworkDe
             connect(device, &dde::network::WirelessDevice::apRemoved, this, &NetworkListModel::APRemoved);
             connect(device, &dde::network::WirelessDevice::apInfoChanged, this, &NetworkListModel::APPropertiesChanged);
             connect(device, &dde::network::WirelessDevice::activeApInfoChanged, networkPlugin, &NetworkPlugin::onActiveAPInfoChanged);
-
-            QTimer::singleShot(1000, this, [=]{
-                networkPlugin->onActiveAPInfoChanged(device->activeApInfo());
-            });
+            connect(device, &dde::network::WirelessDevice::activeConnectionsChanged, networkPlugin, &NetworkPlugin::onActiveConnectionsChanged);
 
             for (auto ap : device->apList()) {
                 emit device->apAdded(ap.toObject());
@@ -45,6 +42,13 @@ void NetworkListModel::setDeviceList(const QMap<QString, dde::network::NetworkDe
     }
 
     // refresh all info
+}
+
+void NetworkListModel::removeHoverIndex()
+{
+    m_hoverIndex = this->index(-1);
+
+    emit dataChanged(m_hoverIndex, m_hoverIndex);
 }
 
 void NetworkListModel::setHoverIndex(const QModelIndex &index)
@@ -194,4 +198,15 @@ int NetworkListModel::normalizeStrength(int strength)
     }
 
     return value;
+}
+
+
+QModelIndex NetworkListModel::modelIndexBySsid(QString ssid)
+{
+    for(int i = 0; i < m_apMap[m_currentWirelessDevice].size(); i++){
+        AccessPoint ap = m_apMap[m_currentWirelessDevice][i];
+        if(ap.ssid() == ssid)
+            return index(i);
+    }
+    return index(-1);
 }

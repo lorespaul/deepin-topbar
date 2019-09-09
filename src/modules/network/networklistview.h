@@ -10,8 +10,10 @@ class NetworkListView : public QListView
     Q_OBJECT
 public:
     explicit NetworkListView(QWidget *parent = nullptr);
+    void leaveEvent(QEvent *event) override;
 
 signals:
+    void exited();
 
 public slots:
 };

@@ -24,24 +24,22 @@ void NetworkDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
     const QString icon { index.data(NetworkListModel::IconRole).toString() };
     const bool isSecurity { index.data(NetworkListModel::SecurityRole).toBool() };
 
+    QPoint rightIconPoint(option.rect.topRight());
+    rightIconPoint.setX(rightIconPoint.x() - 23);
+    rightIconPoint.setY(rightIconPoint.y() + 6);
+
     if (index.data(NetworkListModel::HoverRole).toBool()) {
-        painter->fillRect(option.rect, QColor(0, 0, 0, 0.1 * 255));
+        painter->fillRect(option.rect, QColor(16, 109, 150, 150));
 
-        if(index.data(NetworkListModel::ActiveRole).toBool()){
+        // if(index.data(NetworkListModel::ActiveRole).toBool()){
 
-            //TODO: show ap connected/deactive ap connection
-            QPoint selectedIconPoint(option.rect.topRight());
-            selectedIconPoint.setX(selectedIconPoint.x() - 23);
-            selectedIconPoint.setY(selectedIconPoint.y() + 6);
-            drawPixmap(painter, ":/wireless/resources/wireless/disconnect.png", QSize(14, 14), selectedIconPoint);
-        }
+        //     //TODO: show ap connected/deactive ap connection
+        //     drawPixmap(painter, ":/wireless/resources/wireless/disconnect.png", QSize(14, 14), rightIconPoint);
+        // }
 
-    } else if(index.data(NetworkListModel::ActiveRole).toBool()){
+    } else if(!index.data(NetworkListModel::HoverRole).toBool() && index.data(NetworkListModel::ActiveRole).toBool()){
 
-        QPoint selectedIconPoint(option.rect.topRight());
-        selectedIconPoint.setX(selectedIconPoint.x() - 23);
-        selectedIconPoint.setY(selectedIconPoint.y() + 6);
-        drawPixmap(painter, ":/wireless/resources/wireless/selected.png", QSize(14, 14), selectedIconPoint);
+        drawPixmap(painter, ":/wireless/resources/wireless/selected.png", QSize(14, 14), rightIconPoint);
     }
 
     QPoint cachedTopLeft = QPoint(option.rect.topLeft());
@@ -74,13 +72,22 @@ void NetworkDelegate::drawPixmap(QPainter *painter, QString path, QSize size, QP
     qreal devicePixelRatio = qApp->devicePixelRatio();
     reader.setFileName(path);
     if (reader.canRead()) {
-        // reader.setScaledSize(size * (devicePixelRatio / sourceDevicePixelRatio));
         pixmap = QPixmap::fromImage(reader.read())
                     .scaled(size * (devicePixelRatio / sourceDevicePixelRatio), Qt::KeepAspectRatio, Qt::SmoothTransformation);
         pixmap.setDevicePixelRatio(devicePixelRatio);
     }
-    QRect securityRect(QPoint(point.x(), point.y() + 4), pixmap.size() / devicePixelRatio);
-    painter->drawPixmap(securityRect, pixmap);
+    QRect rect(QPoint(point.x(), point.y() + 4), pixmap.size() / qApp->devicePixelRatio());
+    painter->drawPixmap(rect, pixmap);
+}
+
+
+QWidget *NetworkDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem & options, const QModelIndex &index) const
+{
+    if(index.data(NetworkListModel::HoverRole).toBool() && index.data(NetworkListModel::ActiveRole).toBool()){
+
+        
+
+    }
 }
 
 

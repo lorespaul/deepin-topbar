@@ -16,6 +16,7 @@ FontLabel::FontLabel(QWidget *parent) : QLabel(parent)
     QString fontName=QFontDatabase::applicationFontFamilies(fontId).at(0);
 
     m_iconFont = QFont(fontName);
+    setContentsMargins(5, 0, 0, 0);
 }
 
 void FontLabel::setIcon(const QChar c, int size)
@@ -29,7 +30,6 @@ void FontLabel::setIcon(QPixmap pixmap)
 {
     pixmap.setDevicePixelRatio(qApp->devicePixelRatio());
     setPixmap(pixmap);
-    setContentsMargins(5, 0, 5, 0);
 }
 
 void FontLabel::mouseReleaseEvent(QMouseEvent *event)

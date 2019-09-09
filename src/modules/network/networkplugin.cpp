@@ -17,8 +17,10 @@ NetworkPlugin::NetworkPlugin()
 {
     m_networkWidget = new FontLabel;
     m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-disconnect-symbolic.svg")));
-    
+    m_networkWidget->setContentsMargins(5, 0, 5, 0);
+
     m_delayRefreshTimer = new QTimer(this);
+    m_delayRefreshActiveConnection = new QTimer(this);
     m_networkModel = new NetworkModel;
     m_networkWorker = new NetworkWorker(m_networkModel);
     m_listModel = new NetworkListModel;
@@ -39,8 +41,11 @@ void NetworkPlugin::init(PluginProxyInterface *proxyInter)
 
     m_delayRefreshTimer->setSingleShot(true);
     m_delayRefreshTimer->setInterval(2000);
+    m_delayRefreshActiveConnection->setSingleShot(false);
+    m_delayRefreshActiveConnection->setInterval(1000);
 
     connect(m_delayRefreshTimer, &QTimer::timeout, this, &NetworkPlugin::refreshWiredItemVisible);
+    connect(m_delayRefreshActiveConnection, &QTimer::timeout, this, &NetworkPlugin::refreshActiveConnection);
     connect(m_networkModel, &NetworkModel::deviceListChanged, this, &NetworkPlugin::onDeviceListChanged);
     connect(m_networkModel, &NetworkModel::connectivityChanged, this, &NetworkPlugin::onConnectivityChanged);
     connect(m_networkModel, &NetworkModel::activeConnectionsChanged, this, &NetworkPlugin::onActiveConnectionsChanged);
@@ -49,7 +54,7 @@ void NetworkPlugin::init(PluginProxyInterface *proxyInter)
     m_proxyInter->addItem(this, "network");
 
     PluginsItem* item = ((MainPanel*)m_proxyInter)->getItem(this, "network");
-    connect(m_controlPanel, &NetworkControlPanel::sizeChanged, item, &PluginsItem::resizePopupWindow);
+    connect(m_controlPanel, &NetworkControlPanel::sizeChanged, item, &PluginsItem::fitToContent);
 
     onDeviceListChanged(m_networkModel->devices());
 }
@@ -107,6 +112,7 @@ void NetworkPlugin::onDeviceListChanged(const QList<NetworkDevice *> devices)
     m_listModel->setDeviceList(m_itemsMap, this);
 
     m_delayRefreshTimer->start();
+    m_delayRefreshActiveConnection->start();
 }
 
 
@@ -115,9 +121,57 @@ void NetworkPlugin::onConnectivityChanged(Connectivity connectivity)
     if(connectivity == Connectivity::NoConnectivity || connectivity == Connectivity::UnknownConnectivity){
 
         m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-disconnect-symbolic.svg")));
+    } else if(connectivity == Connectivity::Limited || connectivity == Connectivity::Full){
+
+        m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-0-symbolic.svg")));
+        refreshActiveConnection();
     }
 }
 
+
+void NetworkPlugin::refreshActiveConnection()
+{
+    QString ssid = "";
+    for(auto conn : m_networkModel->activeConns()){
+        // 0:Unknow, 1:Activating, 2:Activated, 3:Deactivating, 4:Deactivated
+        int state = conn.value("State").toInt();
+        if(state == 2) {
+            ssid = conn.value("Id").toString();
+            break;
+        }
+    }
+
+    if(ssid == "") return;
+
+    try
+    {
+        WirelessDevice *device = (WirelessDevice*)m_listModel->getCurrentNetworkDevice();
+        if(!device) return;
+
+        for (auto ap : device->apList()) {
+            QJsonObject apObj = ap.toObject();
+            if(apObj.value("Ssid") == ssid){
+                onActiveAPInfoChanged(apObj);
+
+                QModelIndex index = m_listModel->modelIndexBySsid(ssid);
+                device->setActiveApBySsid(ssid);
+                emit m_listModel->dataChanged(index, index);
+
+                if(m_delayRefreshActiveConnection != nullptr){
+                    m_delayRefreshActiveConnection->stop();
+                    m_delayRefreshActiveConnection->deleteLater();
+                    m_delayRefreshActiveConnection = nullptr;
+                }
+
+                break;
+            }
+        }
+    }
+    catch(const std::exception& e)
+    {
+        qErrnoWarning("Current device is not a wireless device.");
+    }
+}
 
 
 void NetworkPlugin::onActiveAPInfoChanged(const QJsonObject &info)
@@ -156,9 +210,9 @@ void NetworkPlugin::onActiveConnectionsChanged(const QList<QJsonObject> &activeC
 }
 
 
-void NetworkPlugin::startConnectingTimer()
+void NetworkPlugin::startConnectingTimer(QString ssid)
 {
-
+    connectingSsid = ssid;
     if(m_connectingTimer == nullptr){
 
         m_connectingTimer = new QTimer(this);

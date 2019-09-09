@@ -20,7 +20,7 @@ public:
     explicit NetworkControlPanel(NetworkPlugin *networkPlugin, NetworkWorker *networkWorker, NetworkListModel *model, QWidget *parent = nullptr);
 
 signals:
-    void sizeChanged(int width, int height);
+    void sizeChanged();
 
 public slots:
     void adjustWidgetSize();
