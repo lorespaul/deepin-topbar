@@ -21,7 +21,7 @@ public slots:
     void setFormat(const QString &value);
 
 private slots:
-    void updateTime();
+    QString updateTime();
 
 private:
     QDateTime *m_dateTime;
