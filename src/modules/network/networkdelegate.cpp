@@ -6,6 +6,7 @@
 #include <DHiDPIHelper>
 #include <QApplication>
 #include <QImageReader>
+#include <QPushButton>
 
 DWIDGET_USE_NAMESPACE
 
@@ -31,11 +32,9 @@ void NetworkDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
     if (index.data(NetworkListModel::HoverRole).toBool()) {
         painter->fillRect(option.rect, QColor(16, 109, 150, 150));
 
-        // if(index.data(NetworkListModel::ActiveRole).toBool()){
-
-        //     //TODO: show ap connected/deactive ap connection
-        //     drawPixmap(painter, ":/wireless/resources/wireless/disconnect.png", QSize(14, 14), rightIconPoint);
-        // }
+        if(index.data(NetworkListModel::ActiveRole).toBool()){
+            drawPixmap(painter, ":/wireless/resources/wireless/disconnect.png", QSize(14, 14), rightIconPoint);
+        }
 
     } else if(!index.data(NetworkListModel::HoverRole).toBool() && index.data(NetworkListModel::ActiveRole).toBool()){
 
@@ -81,14 +80,15 @@ void NetworkDelegate::drawPixmap(QPainter *painter, QString path, QSize size, QP
 }
 
 
-QWidget *NetworkDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem & options, const QModelIndex &index) const
+bool NetworkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
-    if(index.data(NetworkListModel::HoverRole).toBool() && index.data(NetworkListModel::ActiveRole).toBool()){
-
-        
-
+    if(event->type() == QEvent::MouseButtonRelease && index.data(NetworkListModel::ActiveRole).toBool()){
+        QString ssid = index.data(NetworkListModel::NameRole).toString();
+        emit ((NetworkListModel*)index.model())->deactivateActiveConnection(ssid);
     }
+    return false;
 }
+
 
 
 QSize NetworkDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

@@ -49,6 +49,26 @@ void NetworkPlugin::init(PluginProxyInterface *proxyInter)
     connect(m_networkModel, &NetworkModel::deviceListChanged, this, &NetworkPlugin::onDeviceListChanged);
     connect(m_networkModel, &NetworkModel::connectivityChanged, this, &NetworkPlugin::onConnectivityChanged);
     connect(m_networkModel, &NetworkModel::activeConnectionsChanged, this, &NetworkPlugin::onActiveConnectionsChanged);
+    connect(m_listModel, &NetworkListModel::deactivateActiveConnection, this, [=](QString &ssid){
+        WirelessDevice *device = (WirelessDevice*)m_listModel->getCurrentNetworkDevice();
+        if(!device) return;
+
+        QString uuid = "";
+        QList<QJsonObject> connections = device->connections();
+        for (auto item : connections) {
+            if (item.value("Ssid").toString() != ssid)
+                continue;
+
+            uuid = item.value("Uuid").toString();
+            if (!uuid.isEmpty())
+                break;
+        }
+        
+        if(uuid != ""){
+            m_networkWorker->deactiveConnection(uuid);
+            m_networkWorker->requestWirelessScan(); // refresh aps
+        }
+    });
 
     m_networkWorker->active();
     m_proxyInter->addItem(this, "network");
@@ -118,12 +138,16 @@ void NetworkPlugin::onDeviceListChanged(const QList<NetworkDevice *> devices)
 
 void NetworkPlugin::onConnectivityChanged(Connectivity connectivity)
 {
-    if(connectivity == Connectivity::NoConnectivity || connectivity == Connectivity::UnknownConnectivity){
-
+    WirelessDevice *device = (WirelessDevice*)m_listModel->getCurrentNetworkDevice();
+    if(device && !device->enabled()){
         m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-disconnect-symbolic.svg")));
-    } else if(connectivity == Connectivity::Limited || connectivity == Connectivity::Full){
+        return;
+    }
 
-        m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-0-symbolic.svg")));
+    m_networkWidget->setIcon(DHiDPIHelper::loadNxPixmap(QString(":/wireless/resources/wireless/wireless-0-symbolic.svg")));
+    
+    if(connectivity == Connectivity::Limited || connectivity == Connectivity::Full){
+        
         refreshActiveConnection();
     }
 }
@@ -132,10 +156,11 @@ void NetworkPlugin::onConnectivityChanged(Connectivity connectivity)
 void NetworkPlugin::refreshActiveConnection()
 {
     QString ssid = "";
+    int state = -1;
     for(auto conn : m_networkModel->activeConns()){
         // 0:Unknow, 1:Activating, 2:Activated, 3:Deactivating, 4:Deactivated
-        int state = conn.value("State").toInt();
-        if(state == 2) {
+        state = conn.value("State").toInt();
+        if(state == 1 || state == 2) {
             ssid = conn.value("Id").toString();
             break;
         }
@@ -151,19 +176,29 @@ void NetworkPlugin::refreshActiveConnection()
         for (auto ap : device->apList()) {
             QJsonObject apObj = ap.toObject();
             if(apObj.value("Ssid") == ssid){
-                onActiveAPInfoChanged(apObj);
 
-                QModelIndex index = m_listModel->modelIndexBySsid(ssid);
-                device->setActiveApBySsid(ssid);
-                emit m_listModel->dataChanged(index, index);
+                if(state == 1){
 
-                if(m_delayRefreshActiveConnection != nullptr){
-                    m_delayRefreshActiveConnection->stop();
-                    m_delayRefreshActiveConnection->deleteLater();
-                    m_delayRefreshActiveConnection = nullptr;
+                    startConnectingTimer(ssid);
+
+                } else if(state == 2){
+
+                    onActiveAPInfoChanged(apObj);
+
+                    QModelIndex index = m_listModel->modelIndexBySsid(ssid);
+                    device->setActiveApBySsid(ssid);
+                    emit m_listModel->dataChanged(index, index);
+
+                    if(m_delayRefreshActiveConnection != nullptr){
+                        m_delayRefreshActiveConnection->stop();
+                        m_delayRefreshActiveConnection->deleteLater();
+                        m_delayRefreshActiveConnection = nullptr;
+                    }
+
+                    stopConnectingTimer();
+
+                    break;
                 }
-
-                break;
             }
         }
     }

@@ -32,16 +32,14 @@ public:
 
     void setHoverIndex(const QModelIndex &index);
     void removeHoverIndex();
-    int rowCount();
+    int rowCount(const QModelIndex &parent) const Q_DECL_OVERRIDE;
     QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
     AccessPoint* getAP(const QModelIndex &index);
     NetworkDevice* getCurrentNetworkDevice();
 
     static int normalizeStrength(int strength);
     QModelIndex modelIndexBySsid(QString ssid);
-
-protected:
-    int rowCount(const QModelIndex &parent) const Q_DECL_OVERRIDE;
+    void toggleList(bool active);
 
 private:
     void onActivateConnectChanged();
@@ -56,9 +54,13 @@ private:
     QMap<QString, dde::network::WiredDevice*> m_wiredList;
     QMap<QString, dde::network::WirelessDevice*> m_wirelessList;
     QMap<dde::network::WirelessDevice*, QList<AccessPoint>> m_apMap;
+    QList<AccessPoint> *m_cacheApMap = nullptr;
     dde::network::WirelessDevice *m_currentWirelessDevice;
     NetworkControlPanel *m_controlPanel;
     QModelIndex m_hoverIndex;
+
+signals:
+    void deactivateActiveConnection(QString &ssid);
 
 };
 }

@@ -61,17 +61,13 @@ void NetworkListModel::setHoverIndex(const QModelIndex &index)
 int NetworkListModel::rowCount(const QModelIndex &parent) const
 {
     if (!m_currentWirelessDevice) {
-        return 0;
+        return 1;
     }
 
-    return m_apMap[m_currentWirelessDevice].size();
+    int apSize = m_apMap[m_currentWirelessDevice].size();
+    return apSize == 0 ? 1 : apSize;
 }
 
-int NetworkListModel::rowCount()
-{
-    if (!m_currentWirelessDevice) return 0;
-    return m_apMap[m_currentWirelessDevice].size();
-}
 
 AccessPoint* NetworkListModel::getAP(const QModelIndex &index)
 {
@@ -79,7 +75,9 @@ AccessPoint* NetworkListModel::getAP(const QModelIndex &index)
 
     const int row { index.row() };
 
-    return &m_apMap[m_currentWirelessDevice][row];
+    if(m_apMap[m_currentWirelessDevice].size() > row)
+        return &m_apMap[m_currentWirelessDevice][row];
+    return nullptr;
 }
 
 NetworkDevice* NetworkListModel::getCurrentNetworkDevice()
@@ -96,16 +94,24 @@ QVariant NetworkListModel::data(const QModelIndex &index, int role) const
 
     switch (role) {
     case NameRole:
+        if(m_apMap[m_currentWirelessDevice].size() == 0)
+            return tr("No access point found...");
         return m_apMap[m_currentWirelessDevice][row].ssid();
     case SizeRole:
-        return QSize(350, 34);
+        return QSize(300, 34);
     case HoverRole:
         return index == m_hoverIndex;
     case ActiveRole:
+        if(m_apMap[m_currentWirelessDevice].size() == 0)
+            return false;
         return m_currentWirelessDevice->activeApSsid() == m_apMap[m_currentWirelessDevice][row].ssid();
     case IconRole:
+        if(m_apMap[m_currentWirelessDevice].size() == 0)
+            return QVariant();
         return icon(index);
     case SecurityRole:
+        if(m_apMap[m_currentWirelessDevice].size() == 0)
+            return false;
         return isSecurity(index);
     default:
         break;
@@ -130,6 +136,11 @@ void NetworkListModel::APAdded(const QJsonObject &obj)
     dde::network::WirelessDevice* dev = static_cast<dde::network::WirelessDevice*>(sender());
     if (m_apMap[dev].contains(ap)) return;
 
+    if(m_cacheApMap != nullptr){
+        m_cacheApMap->append(ap);
+        return;
+    }
+
     m_apMap[dev] << std::move(ap);
 
     // refresh
@@ -141,6 +152,12 @@ void NetworkListModel::APRemoved(const QJsonObject &obj)
     const AccessPoint ap(obj);
 
     dde::network::WirelessDevice* dev = static_cast<dde::network::WirelessDevice*>(sender());
+
+    if(m_cacheApMap != nullptr){
+        m_cacheApMap->removeOne(ap);
+        return;
+    }
+
     m_apMap[dev].removeOne(ap);
 
     // refresh
@@ -159,6 +176,9 @@ void NetworkListModel::APPropertiesChanged(const QJsonObject &apInfo)
             break;
         }
     }
+
+    if(m_cacheApMap != nullptr)
+        return;
 
     // refresh
     const QModelIndex i = index(m_apMap[dev].indexOf(ap));
@@ -179,6 +199,30 @@ const QString NetworkListModel::icon(const QModelIndex &index) const
 
     return QString(":/wireless/resources/wireless/wireless-%1.svg").arg(value);
 }
+
+
+void NetworkListModel::toggleList(bool active)
+{
+    if(!m_currentWirelessDevice) return;
+
+    if(active){
+
+        if(m_cacheApMap != nullptr && m_cacheApMap->size() > 0){
+            m_apMap[m_currentWirelessDevice].append(*m_cacheApMap);
+            m_cacheApMap = nullptr;
+        }
+
+    } else {
+
+        if(m_apMap[m_currentWirelessDevice].size() > 0)
+            m_cacheApMap = new QList<AccessPoint>(m_apMap[m_currentWirelessDevice]);
+        else 
+            m_cacheApMap = new QList<AccessPoint>();
+        m_apMap[m_currentWirelessDevice].clear();
+
+    }
+}
+
 
 int NetworkListModel::normalizeStrength(int strength)
 {
