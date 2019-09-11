@@ -37,10 +37,14 @@ DateTimeWidget::~DateTimeWidget() {
     delete m_dateTime;
 }
 
-QString DateTimeWidget::updateTime() {
+void DateTimeWidget::updateTime() {
     QString date = m_dateTime->currentDateTime().toString(m_format + (m_24HourFormat ? "" : " A"));
+    int width = fontMetrics().width(date);
+    if(width > maxLblWidth)
+        maxLblWidth = width;
+    m_timeLbl->setFixedWidth(maxLblWidth);
+    qDebug("date text width: %d", maxLblWidth);
     m_timeLbl->setText(date);
-    return date;
 }
 
 void DateTimeWidget::set24HourFormat(bool is24HourFormat)
@@ -49,9 +53,9 @@ void DateTimeWidget::set24HourFormat(bool is24HourFormat)
         return;
 
     m_24HourFormat = is24HourFormat;
+    maxLblWidth = 0;
 
-    QString printed = updateTime();
-    m_timeLbl->setFixedWidth(fontMetrics().width(printed) + 1);
+    updateTime();
 }
 
 void DateTimeWidget::setFormat(const QString &value)
@@ -59,8 +63,9 @@ void DateTimeWidget::setFormat(const QString &value)
     if (!value.isEmpty())
         m_format = value;
 
-    QString printed = updateTime();
-    m_timeLbl->setFixedWidth(fontMetrics().width(printed) + 1);
+    maxLblWidth = 0;
+
+    updateTime();
 }
 }
 }

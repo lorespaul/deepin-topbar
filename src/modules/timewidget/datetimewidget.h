@@ -21,13 +21,14 @@ public slots:
     void setFormat(const QString &value);
 
 private slots:
-    QString updateTime();
+    void updateTime();
 
 private:
     QDateTime *m_dateTime;
     bool m_24HourFormat;
     QString m_format;
     QLabel *m_timeLbl;
+    int maxLblWidth;
 };
 }
 }
