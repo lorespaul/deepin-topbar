@@ -43,7 +43,7 @@ void DateTimeWidget::updateTime() {
     if(width > maxLblWidth)
         maxLblWidth = width;
     m_timeLbl->setFixedWidth(maxLblWidth);
-    qDebug("date text width: %d", maxLblWidth);
+    //qDebug("date text width: %d", maxLblWidth);
     m_timeLbl->setText(date);
 }
 

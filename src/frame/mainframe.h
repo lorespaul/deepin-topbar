@@ -1,7 +1,7 @@
 #ifndef MAINFRAME_H
 #define MAINFRAME_H
 
-#define QMENU_STYLE "QMenu{background-color: transparent; margin: 0px;}QMenu::item{color: #d3d3d3; margin: 0px; padding: 3px 18px;}QMenu::item:selected{background: rgba(16, 109, 170, 150);}QMenu::separator{height: 1px;background: rgba(200, 200, 200, 150);}"
+#define QMENU_STYLE "QMenu{background-color: transparent; margin: 0px;}QMenu::item{color: white; margin: 0px; padding: 3px 18px;}QMenu::item:selected{background: rgba(16, 109, 170, 150);}QMenu::separator{height: 1px;background: rgba(200, 200, 200, 150);}"
 
 #include <QFrame>
 #include <QDesktopWidget>
